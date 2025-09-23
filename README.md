@@ -1,2 +1,7 @@
-# RideMate
-Carpool for University Students
+# REST Api Assignment
+
+
+#Instructions
+-
+-
+-
