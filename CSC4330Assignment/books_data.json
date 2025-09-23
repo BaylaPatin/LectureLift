@@ -1,0 +1,85 @@
+{
+    "books": [
+        {
+            "isbn": "978-0-200000-00-0",
+            "title": "Everything Works Perfectly",
+            "author": "Success Author",
+            "description": "Everything is fine, here's a comprehensive guide to success!",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780143127741-L.jpg",
+            "year_published": 2020,
+            "pages": 250
+        },
+        {
+            "isbn": "978-0-201000-00-1",
+            "title": "Creating New Things",
+            "author": "Innovation Writer",
+            "description": "A new resource was created successfully - learn how to innovate.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780525559474-L.jpg",
+            "year_published": 2021,
+            "pages": 320
+        },
+        {
+            "isbn": "978-0-202000-00-2",
+            "title": "Processing Your Requests",
+            "author": "Workflow Expert",
+            "description": "Your request is being processed - mastering efficient workflows.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
+            "year_published": 2019,
+            "pages": 280
+        },
+        {
+            "isbn": "978-0-204000-00-4",
+            "title": "The Art of Minimalism",
+            "author": "Content Curator",
+            "description": "Request succeeded but no content returned - embracing minimalist living.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780544002234-L.jpg",
+            "year_published": 2018,
+            "pages": 200
+        },
+        {
+            "isbn": "978-0-400000-00-0",
+            "title": "Understanding Mistakes",
+            "author": "Error Handler",
+            "description": "You sent something we cannot process - learning from our errors.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9781476746753-L.jpg",
+            "year_published": 2017,
+            "pages": 190
+        },
+        {
+            "isbn": "978-0-401000-00-1",
+            "title": "Authentication Required",
+            "author": "Security Specialist",
+            "description": "You must be authenticated to access this resource - cybersecurity essentials.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780393356687-L.jpg",
+            "year_published": 2022,
+            "pages": 350
+        },
+        {
+            "isbn": "978-0-404000-00-4",
+            "title": "Lost and Found",
+            "author": "Search Expert",
+            "description": "Sorry, we could not find the resource - a guide to finding what's missing.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780062457738-L.jpg",
+            "year_published": 2016,
+            "pages": 240
+        },
+        {
+            "isbn": "978-0-500000-00-0",
+            "title": "When Everything Breaks",
+            "author": "Crisis Manager",
+            "description": "Something went very wrong on the server - disaster recovery strategies.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780812993547-L.jpg",
+            "year_published": 2015,
+            "pages": 400
+        },
+        {
+            "isbn": "978-0-303000-00-3",
+            "title": "Testing Methods",
+            "author": "Quality Assurance",
+            "description": "Comprehensive testing strategies for modern development.",
+            "cover_url": "https://covers.openlibrary.org/b/isbn/9780134685991-L.jpg",
+            "year_published": 2023,
+            "pages": 180
+        }
+    ]
+}
