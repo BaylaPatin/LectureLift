@@ -71,15 +71,6 @@
             "cover_url": "https://covers.openlibrary.org/b/isbn/9780812993547-L.jpg",
             "year_published": 2015,
             "pages": 400
-        },
-        {
-            "isbn": "978-0-303000-00-3",
-            "title": "Testing Methods",
-            "author": "Quality Assurance",
-            "description": "Comprehensive testing strategies for modern development.",
-            "cover_url": "https://covers.openlibrary.org/b/isbn/9780134685991-L.jpg",
-            "year_published": 2023,
-            "pages": 180
         }
     ]
 }
