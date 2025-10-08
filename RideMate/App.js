@@ -4,8 +4,77 @@ import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity } fr
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
+import { Alert } from 'react-native'
 
 const Stack = createNativeStackNavigator();
+
+function AuthScreen({ navigation }) {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+
+  const handleAuth = () => {
+    //email verification
+    if (!email.endsWith('.edu')) {
+      Alert.alert('Invalid Email', 'Please use your .edu email address to continue.');
+      return;
+    }
+    if (!email || !password || (isSignUp && !name)) {
+      Alert.alert('Missing Fields', 'Please fill out all required fields.');
+      return;
+    }
+    //simulated access
+    Alert.alert(
+      isSignUp ? 'Account Created' : 'Login Successful',
+      `Welcome, ${isSignUp ? name : email}!`
+    );
+    navigation.replace('Home');
+  };
+
+  return (
+    <View style={styles.authContainer}>
+      <Text style={styles.appTitle}>RideMate</Text>
+      <Text style={styles.subtitle}>{isSignUp ? 'Create your account' : 'Welcome back'}</Text>
+
+      {isSignUp && (
+        <TextInput 
+          style={styles.input}
+          placeholder="Full Name"
+          value={name}
+          onChangeText={setName}/>
+      )}
+
+      <TextInput 
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none" />
+
+      <TextInput 
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry />
+
+      <TouchableOpacity style={styles.button} onPress={handleAuth}>
+        <Text style={styles.buttonText}>{isSignUp ? 'Sign Up' : 'Login'}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
+        <Text style={styles.switchText}>
+          {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
+        </Text>
+      </TouchableOpacity>
+
+      <StatusBar style="auto" />
+
+    </View>
+  );
+}
 
 function HomeScreen({ navigation })
 {
@@ -48,7 +117,7 @@ function ProfileScreen()
     {
       console.error('Image picker error: ', error);
       alert('Something went wrong while picking the image.');
-    }
+    } 
   };
 
   return (
@@ -110,7 +179,8 @@ export default function App()
 {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="Auth">
+        <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false}}/>
         <Stack.Screen name="Home" component={HomeScreen}/>
         <Stack.Screen name="Profile" component={ProfileScreen}/>
       </Stack.Navigator>
@@ -120,46 +190,73 @@ export default function App()
 
 const styles = StyleSheet.create
 ({
-  container: 
-  {
+  authContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f4f8',
     padding: 20,
   },
-
-  title:
-  {
-    fontSize: 28,
+  appTitle: {
+    fontSize: 36,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: '#0004aad',
+    marginBottom: 10,
   },
-
-  input:
-  {
+  subtitle: {
+    fontSize: 18,
+    color: '#555', marginBottom: 20,
+  },
+  input: {
     width: '90%',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
     marginVertical: 8,
+    backgroundColor: '#fff',
   },
-
-  profileImage:
-  {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 20,
-    backgroundColor: '#eee',
+  button: { 
+    backgroundColor: '#004aad',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 50,
+    marginTop: 10,
   },
-
-  placeholder:
-  {
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  switchText: {
+    color: '#004aad',
+    marginTop: 15,
+    fontSize: 15,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  text: { fontSize: 18, marginVertical: 5 },
+  title: {
+    fontSize: 28, 
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  profileImage: { 
+    width: 120, 
+    height: 120, 
+    borderRadius: 60,
+    marginBttom: 20,
+    backgroundColor: '#eee',
+  },
+  placeholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 18,
+    marginVertical: 5,
+  },
 });
