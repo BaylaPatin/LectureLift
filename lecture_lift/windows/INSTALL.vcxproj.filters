@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gamin\OneDrive\Documents\GitHub\LectureLift\lecture_lift\windows\CMakeFiles\ff2cf6c361ab6882949fa6bac2b45367\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CF97BE3C-2AE4-3546-B07C-12D2B0BAC568}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

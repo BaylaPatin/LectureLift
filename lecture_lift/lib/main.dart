@@ -15,6 +15,8 @@ Future main() async {
 class MyApp extends StatelessWidget {
   static final String title = 'User Profile';
 
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

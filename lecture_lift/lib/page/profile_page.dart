@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lecture_lift/model/user.dart';
 import 'package:lecture_lift/utils/user_preferences.dart';
@@ -8,6 +7,8 @@ import 'package:lecture_lift/widget/numbers_widget.dart';
 import 'package:lecture_lift/widget/profile_widget.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }

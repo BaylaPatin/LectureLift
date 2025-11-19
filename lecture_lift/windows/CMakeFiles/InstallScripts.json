@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/cmake_install.cmake",
+		"C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/flutter/cmake_install.cmake",
+		"C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/runner/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

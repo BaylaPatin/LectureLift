@@ -1,0 +1,10 @@
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/CMakeFiles/INSTALL.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/CMakeFiles/ALL_BUILD.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/CMakeFiles/ZERO_CHECK.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/flutter/CMakeFiles/flutter_wrapper_app.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/flutter/CMakeFiles/flutter_assemble.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/flutter/CMakeFiles/INSTALL.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/runner/CMakeFiles/lecture_lift.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/runner/CMakeFiles/INSTALL.dir
+C:/Users/gamin/OneDrive/Documents/GitHub/LectureLift/lecture_lift/windows/runner/CMakeFiles/ALL_BUILD.dir
