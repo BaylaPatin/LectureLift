@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "695328846988",
+    "project_id": "lecture-lift",
+    "storage_bucket": "lecture-lift.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695328846988:android:32ca98e6625e58841c37a9",
+        "android_client_info": {
+          "package_name": "com.example.lecture_lift"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJZIQAEtM7v1VFst2OsmhaIp2akKLwDAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,15 @@
 # LectureLift
 
-A Flutter application for campus navigation and routing.
+**Ride-sharing for students, by students.**
+
+LectureLift ensures you never have to worry about getting to class. Connect with students who have similar schedules and catch a lift securely.
+
+## Core Features
+- **🎓 Edu-Verification**: Exclusive access for students with valid `.edu` emails.
+- **📸 Photo Verification**: Enhanced security with verified user profiles.
+- **⭐ Trust System**: Profile ratings and driving scores to ensure safety.
+- **🎁 Driver Incentives**: Earn rewards and recognition for helping peers.
+- **📍 Smart Routing**: Route matching based on class schedules and location.
 
 ## Prerequisites
 

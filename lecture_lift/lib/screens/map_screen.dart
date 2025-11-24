@@ -7,6 +7,7 @@ import '../widgets/map_search_bar.dart';
 import '../widgets/map_bottom_navigation_bar.dart';
 import '../widgets/map_helper_card.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'schedule_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -240,7 +241,12 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedIndex = index;
     });
-
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+      );
+    }
     switch (index) {
       case 0:
         break;
