@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
+import '../widgets/map_search_bar.dart';
+import '../widgets/map_bottom_navigation_bar.dart';
+import '../widgets/map_helper_card.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'schedule_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -153,18 +157,44 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _drawRoute() {
+  void _drawRoute() async {
     if (_startLocation != null && _endLocation != null) {
-      setState(() {
-        _polylines.add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: [_startLocation!, _endLocation!],
-            color: Colors.blue,
-            width: 5,
+      PolylinePoints polylinePoints = PolylinePoints(apiKey: _googleApiKey);
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        request: PolylineRequest(
+          origin: PointLatLng(
+            _startLocation!.latitude,
+            _startLocation!.longitude,
+          ),
+          destination: PointLatLng(
+            _endLocation!.latitude,
+            _endLocation!.longitude,
+          ),
+          mode: TravelMode.driving,
+        ),
+      );
+
+      if (result.points.isNotEmpty) {
+        setState(() {
+          _polylines.add(
+            Polyline(
+              polylineId: const PolylineId('route'),
+              points:
+                  result.points
+                      .map((point) => LatLng(point.latitude, point.longitude))
+                      .toList(),
+              color: Colors.blue,
+              width: 5,
+            ),
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.errorMessage ?? 'Failed to fetch route'),
           ),
         );
-      });
+      }
     }
   }
 
@@ -211,7 +241,12 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedIndex = index;
     });
-
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+      );
+    }
     switch (index) {
       case 0:
         break;
@@ -259,107 +294,35 @@ class _MapScreenState extends State<MapScreen> {
               setState(() {
                 _googleMapController = controller;
               });
+              // Load map style
+              DefaultAssetBundle.of(context)
+                  .loadString('assets/map_style.json')
+                  .then((style) {
+                controller.setMapStyle(style);
+              }).catchError((error) {
+                print("Error loading map style: $error");
+              });
             },
             onTap: _onMapTapped,
             markers: _markers,
             polylines: _polylines,
             mapType: MapType.normal,
           ),
-          Positioned(
-            top: 16,
-            left: 16,
-            right: 16,
-            child: GooglePlaceAutoCompleteTextField(
-              textEditingController: _searchController,
-              googleAPIKey: _googleApiKey,
-              inputDecoration: InputDecoration(
-                hintText: 'Search for a place',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
-                      )
-                    : null,
-              ),
-              debounceTime: 800,
-              countries: const [
-                "us",
-              ], // Restrict to US, remove to search worldwide
-              isLatLngRequired: true,
-              getPlaceDetailWithLatLng: (Prediction prediction) {
-                _onPlaceSelected(prediction);
-              },
-              itemClick: (Prediction prediction) {
-                _searchController.text = prediction.description ?? "";
-                _searchController.selection = TextSelection.fromPosition(
-                  TextPosition(offset: prediction.description?.length ?? 0),
-                );
-              },
-              seperatedBuilder: const Divider(),
-              containerHorizontalPadding: 10,
-              itemBuilder: (context, index, Prediction prediction) {
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.grey),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          prediction.description ?? "",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+          MapSearchBar(
+            searchController: _searchController,
+            googleApiKey: _googleApiKey,
+            onPlaceSelected: _onPlaceSelected,
+            onClear: () {
+              _searchController.clear();
+              setState(() {});
+            },
           ),
-          if (_markers.isEmpty)
-            Positioned(
-              top: 80,
-              left: 16,
-              right: 16,
-              child: Card(
-                color: Colors.blue.shade50,
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text(
-                    'Search for a place or tap on the map to set start/destination',
-                    style: TextStyle(fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
+          if (_markers.isEmpty) const MapHelperCard(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+      bottomNavigationBar: MapBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
