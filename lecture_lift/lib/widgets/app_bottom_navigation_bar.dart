@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class MapBottomNavigationBar extends StatelessWidget {
+class AppBottomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  const MapBottomNavigationBar({
+  const AppBottomNavigationBar({
     Key? key,
     required this.selectedIndex,
     required this.onItemTapped,

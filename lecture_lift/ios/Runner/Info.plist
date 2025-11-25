@@ -45,5 +45,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+<string>LectureLift needs your location to show nearby students for carpooling. Your exact location is approximated for privacy.</string>
 </dict>
 </plist>
