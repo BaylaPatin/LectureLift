@@ -97,10 +97,12 @@ class DatabaseService {
   }
 
   // Save user profile
-  Future<void> saveUserProfile(String userId, String email, String displayName) async {
+  Future<void> saveUserProfile(String userId, String email, String displayName, String phoneNumber, String role) async {
     await _db.collection('users').doc(userId).set({
       'email': email,
       'displayName': displayName,
+      'phoneNumber': phoneNumber,
+      'role': role,
       'createdAt': FieldValue.serverTimestamp(),
       'isVerified': false,
     });

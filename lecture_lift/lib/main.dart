@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'screens/map_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/welcome_screen.dart';
 import 'theme/app_theme.dart';
-import 'services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'LectureLift',
       theme: AppTheme.lightTheme,
-      home: const MapScreen(),
+      home: const WelcomeScreen(),
     );
   }
 }

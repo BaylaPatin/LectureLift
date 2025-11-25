@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../widgets/onboarding_pages/index.dart';
-
+import 'map_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String? userId;
@@ -25,6 +25,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // User data
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   String _userRole = ''; // 'driver' or 'rider'
 
@@ -33,6 +35,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _pageController.dispose();
     _nameController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -83,11 +87,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         emailController: _emailController,
                         onEmailChanged: () => setState(() {}),
                       ),
-                      PhoneInputPage( // Index 2
+                      PasswordInputPage( // Index 2
+                        passwordController: _passwordController,
+                        confirmPasswordController: _confirmPasswordController,
+                        onPasswordChanged: () => setState(() {}),
+                      ),
+                      PhoneInputPage( // Index 3
                         phoneController: _phoneController,
                         onPhoneChanged: () => setState(() {}),
                       ),
-                      RoleSelectionPage( // Index 3
+                      RoleSelectionPage( // Index 4
                         userRole: _userRole,
                         onRoleSelected: (role) {
                           setState(() {
@@ -95,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           });
                         },
                       ),
-                      CompletePage( // Index 4
+                      CompletePage( // Index 5
                         userName: _nameController.text.trim(),
                         userRole: _userRole,
                       ),
@@ -107,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    6,
+                    7,
                     (index) => _buildIndicator(index == _currentPage),
                   ),
                 ),
@@ -121,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back button
-                      if (_currentPage > 0 && _currentPage < 5)
+                      if (_currentPage > 0 && _currentPage < 6)
                         TextButton(
                           onPressed: _isSaving ? null : _previousPage,
                           child: const Text(
@@ -200,7 +209,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  bool get _isLastPage => _currentPage == 4;
+  bool get _isLastPage => _currentPage == 5;
 
   bool _canProceed() {
     switch (_currentPage) {
@@ -210,11 +219,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return _emailController.text.trim().isNotEmpty && 
                _emailController.text.contains('@'); // Email
       case 2:
+        return _passwordController.text.length >= 6 && 
+               _passwordController.text == _confirmPasswordController.text; // Password
+      case 3:
         final digitsOnly = _phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
         return digitsOnly.length == 10; // Phone
-      case 3:
-        return _userRole.isNotEmpty; // Role
       case 4:
+        return _userRole.isNotEmpty; // Role
+      case 5:
         return true; // Complete Screen
       default:
         return false;
@@ -240,85 +252,67 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _skipToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const MapScreen()),
     );
   }
 
   //AI generated try catch block
   Future<void> _completeOnboarding() async {
-  // 1. START LOADING STATE
-  setState(() {
-    _isSaving = true;
-  });
+    // 1. START LOADING STATE
+    setState(() {
+      _isSaving = true;
+    });
 
-  try {
-    // 2. DATA PROCESSING AND DB OPERATION
-    final userId = widget.userId ?? _emailController.text.trim();
-    
-    // Save user profile to Firestore (This is the operation that might fail)
-    await _dbService.saveUserProfile(
-      userId,
-      _emailController.text.trim(),
-      _nameController.text.trim(),
-    );
-
-    // TODO: Do somethinmg with role?
-
-    // 3. SUCCESSFUL COMPLETION: NAVIGATE
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+    try {
+      // 2. DATA PROCESSING AND DB OPERATION
+      final userId = widget.userId ?? _emailController.text.trim();
+      
+      // Save user profile to Firestore (This is the operation that might fail)
+      print('Saving user profile: userId=$userId, email=${_emailController.text.trim()}, name=${_nameController.text.trim()}, phone=${_phoneController.text.trim()}, role=$_userRole');
+      await _dbService.saveUserProfile(
+        userId,
+        _emailController.text.trim(),
+        _nameController.text.trim(),
+        _phoneController.text.trim(),
+        _userRole,
       );
-    }
-  } catch (e) {
-    // 4. ERROR HANDLING
-    print('Error during onboarding save: $e'); 
 
-    if (mounted) {
-      // Show error dialog to the user
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error Saving Profile'),
-          content: Text('Failed to save your information. Please check your connection and try again. Error details: ${e.toString()}'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  } finally {
-    // 5. GUARANTEE STATE RESET (This prevents the stuck loading screen)
-    // We only reset if the widget is still in the tree and navigation hasn't occurred.
-    if (mounted && _isSaving) {
-      setState(() {
-        _isSaving = false;
-      });
+      // 3. SUCCESSFUL COMPLETION: NAVIGATE
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MapScreen()),
+        );
+      }
+    } catch (e) {
+      // 4. ERROR HANDLING
+      print('Error during onboarding save: $e'); 
+
+      if (mounted) {
+        // Show error dialog to the user
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error Saving Profile'),
+            content: Text('Failed to save your information. Please check your connection and try again. Error details: ${e.toString()}'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } finally {
+      // 5. GUARANTEE STATE RESET (This prevents the stuck loading screen)
+      // We only reset if the widget is still in the tree and navigation hasn't occurred.
+      if (mounted && _isSaving) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 }
-}
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Restart Onboarding Demo'),
-        backgroundColor: Colors.blue,
-      ),
-      body: const Center(
-        child: Text(
-          'Just a placeholder screen so i can show you guys onboarding. This would prob be edit/confirm profile screen.',
-          style: TextStyle(fontSize: 24),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
