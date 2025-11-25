@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
+import '../services/auth_state.dart';
+import '../services/location_service.dart';
 import '../widgets/onboarding_pages/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'map_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -50,23 +53,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             Column(
               children: [
-                // Skip button (only show on first page)
-                if (_currentPage == 0)
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextButton(
-                        onPressed: _skipToHome,
-                        child: const Text(
-                          "Skip",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
+                // Back to Welcome button
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, size: 28),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      tooltip: 'Back to Welcome',
                     ),
-                  )
-                else
-                  const SizedBox(height: 60),
+                  ),
+                ),
 
                 // PageView
                 Expanded(
@@ -104,7 +104,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           });
                         },
                       ),
-                      CompletePage( // Index 5
+                      LocationPermissionPage( // Index 5
+                        onPermissionGranted: () async {
+                          // Save location to Firestore when permission is granted
+                          final userId = _emailController.text.trim();
+                          final locationService = LocationService();
+                          await locationService.updateUserLocation(userId);
+                          
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        onPermissionSkipped: () {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                      ),
+                      CompletePage( // Index 6
                         userName: _nameController.text.trim(),
                         userRole: _userRole,
                       ),
@@ -130,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back button
-                      if (_currentPage > 0 && _currentPage < 6)
+                      if (_currentPage > 0 && _currentPage < 7)
                         TextButton(
                           onPressed: _isSaving ? null : _previousPage,
                           child: const Text(
@@ -209,7 +228,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  bool get _isLastPage => _currentPage == 5;
+  bool get _isLastPage => _currentPage == 6;
 
   bool _canProceed() {
     switch (_currentPage) {
@@ -227,6 +246,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       case 4:
         return _userRole.isNotEmpty; // Role
       case 5:
+        return true; // Location Permission (can skip)
+      case 6:
         return true; // Complete Screen
       default:
         return false;
@@ -267,14 +288,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       // 2. DATA PROCESSING AND DB OPERATION
       final userId = widget.userId ?? _emailController.text.trim();
       
-      // Save user profile to Firestore (This is the operation that might fail)
-      print('Saving user profile: userId=$userId, email=${_emailController.text.trim()}, name=${_nameController.text.trim()}, phone=${_phoneController.text.trim()}, role=$_userRole');
+      // Save user profile to Firestore
+      print('Saving user profile: userId=$userId');
+      
       await _dbService.saveUserProfile(
         userId,
-        _emailController.text.trim(),
-        _nameController.text.trim(),
-        _phoneController.text.trim(),
-        _userRole,
+        {
+          'email': _emailController.text.trim(),
+          'displayName': _nameController.text.trim(),
+          'phoneNumber': _phoneController.text.trim(),
+          'role': _userRole,
+          'createdAt': FieldValue.serverTimestamp(),
+          'isVerified': false,
+        },
+      );
+
+      // Save user session
+      await AuthState.saveUserSession(
+        userId: userId,
+        email: _emailController.text.trim(),
+        name: _nameController.text.trim(),
       );
 
       // 3. SUCCESSFUL COMPLETION: NAVIGATE

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'map_screen.dart';
 import 'onboarding_screen.dart';
+import '../services/auth_state.dart';
+import '../services/database_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,8 +37,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       // TODO: Implement actual authentication with Firebase Auth
-      // For now, just simulate login
-      await Future.delayed(const Duration(seconds: 1));
+      // For now, fetch user data from database using email as userId
+      final userId = _emailController.text.trim();
+      
+      final dbService = DatabaseService();
+      final userProfile = await dbService.getUserProfile(userId);
+      
+      if (userProfile == null) {
+        throw Exception('User not found. Please sign up first.');
+      }
+      
+      // Save user session
+      await AuthState.saveUserSession(
+        userId: userId,
+        email: userProfile['email'] ?? userId,
+        name: userProfile['displayName'] ?? 'User',
+      );
 
       if (mounted) {
         Navigator.pushReplacement(

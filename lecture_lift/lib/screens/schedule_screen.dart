@@ -4,7 +4,7 @@ import '../models/schedule_model.dart';
 import '../widgets/add_class_form.dart';
 import '../widgets/calendar_import_widget.dart';
 import '../theme/app_theme.dart';
-import '../services/auth_service.dart';
+import '../services/auth_state.dart';
 import '../services/database_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -20,9 +20,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   List<ClassSession> _schedule = [];
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  final _authService = AuthService();
   final _dbService = DatabaseService();
   bool _isLoading = true;
+  String? _userId;
 
   @override
   void initState() {
@@ -39,10 +39,12 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   }
 
   Future<void> _loadSchedule() async {
-    final user = _authService.currentUser;
-    if (user != null) {
+    // Get userId from AuthState
+    _userId = await AuthState.getCurrentUserId();
+    
+    if (_userId != null) {
       try {
-        final schedule = await _dbService.getSchedule(user.uid);
+        final schedule = await _dbService.getSchedule(_userId!);
         setState(() {
           _schedule = schedule;
           _isLoading = false;
@@ -52,18 +54,27 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         setState(() => _isLoading = false);
       }
     } else {
+      print('No user logged in');
       setState(() => _isLoading = false);
     }
   }
 
   Future<void> _saveSchedule() async {
-    final user = _authService.currentUser;
-    if (user != null) {
+    if (_userId != null) {
       try {
-        await _dbService.saveSchedule(user.uid, _schedule);
+        await _dbService.saveSchedule(_userId!, _schedule);
+        print('Schedule saved successfully for user: $_userId');
       } catch (e) {
         print('Error saving schedule: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving schedule: $e')),
+        );
       }
+    } else {
+      print('Cannot save: No user logged in');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to save your schedule')),
+      );
     }
   }
 
