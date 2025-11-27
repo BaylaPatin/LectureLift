@@ -6,6 +6,10 @@ import '../widgets/calendar_import_widget.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_state.dart';
 import '../services/database_service.dart';
+import '../widgets/app_bottom_navigation_bar.dart';
+import 'map_screen.dart';
+import 'find_ride_screen.dart';
+import 'profile_screen.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({Key? key}) : super(key: key);
@@ -137,7 +141,39 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
         ],
       ),
+      bottomNavigationBar: AppBottomNavigationBar(
+        selectedIndex: 1, // Schedule tab
+        onItemTapped: _onItemTapped,
+      ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 1) return; // Already on Schedule
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MapScreen()),
+        );
+        break;
+      case 1:
+        // Already here
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FindRideScreen()),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        );
+        break;
+    }
   }
 
   Widget _buildScheduleView() {

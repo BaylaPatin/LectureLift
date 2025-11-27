@@ -15,7 +15,14 @@ import '../services/location_service.dart';
 import '../services/auth_state.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  final LatLng? destination;
+  final String? destinationName;
+
+  const MapScreen({
+    Key? key,
+    this.destination,
+    this.destinationName,
+  }) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -88,6 +95,37 @@ class _MapScreenState extends State<MapScreen> {
         );
       }
       
+      // Handle passed destination
+      if (widget.destination != null && position != null) {
+        _startLocation = LatLng(position.latitude, position.longitude);
+        _endLocation = widget.destination;
+        
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('start'),
+            position: _startLocation!,
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+            infoWindow: const InfoWindow(title: 'Start'),
+          ),
+        );
+        
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('end'),
+            position: _endLocation!,
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            infoWindow: InfoWindow(title: widget.destinationName ?? 'Destination'),
+          ),
+        );
+        
+        _drawRoute();
+        
+        // Fit bounds after a short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _fitBounds();
+        });
+      }
+      
       // Fetch nearby users
       await _fetchNearbyUsers();
       
@@ -121,13 +159,13 @@ class _MapScreenState extends State<MapScreen> {
       final centerLat = position?.latitude ?? _initialCameraPosition.target.latitude;
       final centerLng = position?.longitude ?? _initialCameraPosition.target.longitude;
       
-      print('DEBUG: Fetching nearby users around $centerLat, $centerLng...');
+      print('DEBUG: Fetching all users around $centerLat, $centerLng...');
       
       final users = await _dbService.getNearbyUsers(
         _currentUserId!,
         centerLat,
         centerLng,
-        _searchRadiusKm,
+        null, // Pass null to get all users regardless of distance
       );
       
       print('DEBUG: Found ${users.length} nearby users');
@@ -346,10 +384,18 @@ class _MapScreenState extends State<MapScreen> {
         // Map - already here
         break;
       case 1:
-        print('Navigate to Search');
+        // Navigate to Schedule
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+        );
         break;
       case 2:
-        print('Navigate to Favorites');
+        // Navigate to Rides
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FindRideScreen()),
+        );
         break;
       case 3:
         // Navigate to Profile
@@ -460,7 +506,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           
           // Find Ride Button (Only for Riders)
-          if (_userRole == 'rider' || _userRole == 'student') // Support both for backward compatibility
+          if (_userRole == 'rider') // Support both for backward compatibility
             Positioned(
               bottom: 16,
               left: 0,
@@ -470,7 +516,7 @@ class _MapScreenState extends State<MapScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const FindRideScreen()),
+                      MaterialPageRoute(builder: (context) => FindRideScreen()),
                     );
                   },
                   icon: const Icon(Icons.directions_car),

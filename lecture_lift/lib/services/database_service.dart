@@ -152,7 +152,7 @@ class DatabaseService {
     String currentUserId,
     double centerLat,
     double centerLng,
-    double radiusKm,
+    double? radiusKm, // Made nullable
   ) async {
     try {
       print('DEBUG: getNearbyUsers called for $currentUserId at $centerLat, $centerLng radius: $radiusKm');
@@ -174,7 +174,7 @@ class DatabaseService {
           continue;
         }
         
-        // Check if location was updated recently (within last 10 minutes)
+        // Check if location was updated recently (within last 60 minutes)
         final lastUpdated = (location['lastUpdated'] as Timestamp?)?.toDate();
         if (lastUpdated == null) {
           print('DEBUG: User ${doc.id} skipped: No lastUpdated timestamp');
@@ -185,8 +185,8 @@ class DatabaseService {
         final minutesDiff = now.difference(lastUpdated).inMinutes;
         print('DEBUG: User ${doc.id} last updated $minutesDiff minutes ago');
         
-        if (minutesDiff > 10) {
-          print('DEBUG: User ${doc.id} skipped: Last updated too long ago (>10m)');
+        if (minutesDiff > 60) {
+          print('DEBUG: User ${doc.id} skipped: Last updated too long ago (>60m)');
           // User hasn't updated location recently, skip
           continue;
         }
@@ -204,7 +204,8 @@ class DatabaseService {
         final distance = _calculateDistance(centerLat, centerLng, approxLat, approxLng);
         print('DEBUG: User ${doc.id} distance: $distance km');
         
-        if (distance <= radiusKm) {
+        // If radiusKm is null, include everyone. Otherwise check distance.
+        if (radiusKm == null || distance <= radiusKm) {
           nearbyUsers.add({
             'userId': doc.id,
             'displayName': data['displayName'] ?? 'User',
@@ -385,5 +386,71 @@ class DatabaseService {
     final m1 = t1.hour * 60 + t1.minute;
     final m2 = t2.hour * 60 + t2.minute;
     return (m1 - m2).abs() <= 30; // Within 30 minutes
+  }
+
+  // --- Ride Requests ---
+
+  // Create a new ride request
+  Future<void> createRideRequest(String riderId, String driverId, Map<String, dynamic> driverData) async {
+    print('DEBUG: createRideRequest called: rider=$riderId, driver=$driverId');
+    await _db.collection('ride_requests').add({
+      'riderId': riderId,
+      'driverId': driverId,
+      'driverName': driverData['displayName'],
+      'status': 'pending', // pending, accepted, rejected
+      'timestamp': FieldValue.serverTimestamp(),
+      'matches': driverData['matches'], // List of matching classes
+    });
+    print('DEBUG: Ride request created successfully');
+  }
+
+  // Stream of incoming requests for a driver
+  Stream<List<Map<String, dynamic>>> getIncomingRequests(String driverId) {
+    print('DEBUG: getIncomingRequests stream started for driver: $driverId');
+    return _db
+        .collection('ride_requests')
+        .where('driverId', isEqualTo: driverId)
+        .where('status', isEqualTo: 'pending')
+        // .orderBy('timestamp', descending: true) // Removed to avoid index issues
+        .snapshots()
+        .asyncMap((snapshot) async {
+          print('DEBUG: Received snapshot with ${snapshot.docs.length} docs');
+          final requests = <Map<String, dynamic>>[];
+          for (var doc in snapshot.docs) {
+            final data = doc.data();
+            print('DEBUG: Processing request ${doc.id}: $data');
+            // Fetch rider details
+            final riderProfile = await getUserProfile(data['riderId']);
+            final riderLocation = riderProfile?['location'];
+            
+            requests.add({
+              'requestId': doc.id,
+              ...data,
+              'riderName': riderProfile?['displayName'] ?? 'Unknown Rider',
+              'riderPhone': riderProfile?['phoneNumber'],
+              'riderLocation': riderLocation != null ? {
+                'latitude': riderLocation['exactLatitude'] ?? riderLocation['approximateLatitude'],
+                'longitude': riderLocation['exactLongitude'] ?? riderLocation['approximateLongitude'],
+              } : null,
+            });
+          }
+          
+          // Sort in memory
+          requests.sort((a, b) {
+            final t1 = a['timestamp'] as Timestamp?;
+            final t2 = b['timestamp'] as Timestamp?;
+            if (t1 == null || t2 == null) return 0;
+            return t2.compareTo(t1); // Descending
+          });
+          
+          return requests;
+        });
+  }
+
+  // Update request status
+  Future<void> updateRequestStatus(String requestId, String newStatus) async {
+    await _db.collection('ride_requests').doc(requestId).update({
+      'status': newStatus,
+    });
   }
 }

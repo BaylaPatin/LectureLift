@@ -7,6 +7,7 @@ import '../widgets/app_bottom_navigation_bar.dart';
 import 'welcome_screen.dart';
 import 'schedule_screen.dart';
 import 'map_screen.dart';
+import 'find_ride_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId;
@@ -479,10 +480,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         break;
       case 1:
-        print('Navigate to Search');
+        // Navigate to Schedule
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+        );
         break;
       case 2:
-        print('Navigate to Favorites');
+        // Navigate to Rides
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FindRideScreen()),
+        );
         break;
       case 3:
         // Profile - already here
