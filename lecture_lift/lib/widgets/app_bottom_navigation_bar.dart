@@ -44,14 +44,14 @@ class AppBottomNavigationBar extends StatelessWidget {
               label: 'Map',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Search',
+              icon: Icon(Icons.calendar_today_outlined),
+              activeIcon: Icon(Icons.calendar_today),
+              label: 'Schedule',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              activeIcon: Icon(Icons.favorite),
-              label: 'Favorites',
+              icon: Icon(Icons.directions_car_outlined),
+              activeIcon: Icon(Icons.directions_car),
+              label: 'Rides',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
