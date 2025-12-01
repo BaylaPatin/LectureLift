@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import '../theme/app_theme.dart';
 
 class MapSearchBar extends StatelessWidget {
   final TextEditingController searchController;
@@ -24,35 +25,37 @@ class MapSearchBar extends StatelessWidget {
       right: 20,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.darkSurface,
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
           ],
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: GooglePlaceAutoCompleteTextField(
           textEditingController: searchController,
           googleAPIKey: googleApiKey,
           inputDecoration: InputDecoration(
             hintText: 'Search destination...',
-            hintStyle: TextStyle(color: Colors.grey[400]),
+            hintStyle: TextStyle(color: Colors.white38),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            prefixIcon: const Icon(Icons.search, color: Color(0xFF6C63FF)),
+            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryPurple),
             suffixIcon:
                 searchController.text.isNotEmpty
                     ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
+                      icon: const Icon(Icons.clear, color: Colors.white54),
                       onPressed: onClear,
                     )
                     : null,
           ),
+          textStyle: const TextStyle(color: Colors.white),
           debounceTime: 800,
           countries: const ["us"],
           isLatLngRequired: true,
@@ -63,19 +66,20 @@ class MapSearchBar extends StatelessWidget {
               TextPosition(offset: prediction.description?.length ?? 0),
             );
           },
-          seperatedBuilder: const Divider(height: 1, indent: 20, endIndent: 20),
+          seperatedBuilder: const Divider(height: 1, indent: 20, endIndent: 20, color: Colors.white24),
           containerHorizontalPadding: 0,
           itemBuilder: (context, index, Prediction prediction) {
             return Container(
+              color: AppTheme.darkSurface,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on_outlined, color: Colors.grey, size: 20),
+                  const Icon(Icons.location_on_outlined, color: Colors.white54, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       prediction.description ?? "",
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
                     ),
                   ),
                 ],

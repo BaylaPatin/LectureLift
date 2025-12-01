@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'onboarding_screen.dart';
+import '../theme/app_theme.dart';
+import '../widgets/glass_gradient_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -8,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.darkBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
@@ -23,20 +25,16 @@ class WelcomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primary.withOpacity(0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: AppTheme.purpleGradient,
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: AppTheme.primaryPurple.withOpacity(0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
                   ],
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.school,
                   size: 72,
                   color: Colors.white,
@@ -52,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
               
@@ -64,7 +62,7 @@ class WelcomeScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: AppTheme.secondaryColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -72,52 +70,23 @@ class WelcomeScreen extends StatelessWidget {
               const Spacer(),
               
               // Sign Up Button
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primary.withOpacity(0.8)],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
+              GlassGradientButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OnboardingScreen(),
                     ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OnboardingScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                  );
+                },
+                gradient: AppTheme.purpleGradient,
+                child: const Text('Sign Up'),
               ),
               
               const SizedBox(height: 16),
               
               // Log In Button
-              OutlinedButton(
+              GlassGradientButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -126,21 +95,10 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   );
                 },
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Log In',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+                gradient: AppTheme.purpleGradient.scale(0.5), // Slightly dimmer or just outline effect? 
+                // Actually, let's just use the same button but maybe different gradient or just standard
+                // User asked for "purple and pink gradient" for these screens.
+                child: const Text('Log In'),
               ),
               
               const SizedBox(height: 48),

@@ -3,6 +3,8 @@ import 'map_screen.dart';
 import 'onboarding_screen.dart';
 import '../services/auth_state.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/glass_gradient_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -88,11 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -109,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
               
@@ -120,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black54,
+                  color: Colors.white70,
                 ),
               ),
               
@@ -130,13 +132,11 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   hintText: 'example@lsu.edu',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.email),
+                  prefixIcon: const Icon(Icons.email, color: Colors.white70),
                 ),
                 onChanged: (value) => setState(() {}),
               ),
@@ -147,16 +147,15 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: 'Enter your password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white70,
                     ),
                     onPressed: () {
                       setState(() {
@@ -189,16 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               
               // Login Button
-              ElevatedButton(
+              GlassGradientButton(
                 onPressed: (_canLogin() && !_isLoading) ? _handleLogin : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  disabledBackgroundColor: Colors.grey.shade300,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                gradient: AppTheme.purpleGradient,
                 child: _isLoading
                     ? const SizedBox(
                         height: 20,
@@ -226,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: Colors.black54),
+                    style: TextStyle(color: Colors.white70),
                   ),
                   TextButton(
                     onPressed: () {

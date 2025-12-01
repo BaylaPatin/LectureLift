@@ -20,7 +20,7 @@ class NameInputPage extends StatelessWidget {
           const Icon(
             Icons.person_outline,
             size: 100,
-            color: Colors.blue,
+            color: Colors.white,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -28,6 +28,7 @@ class NameInputPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -35,19 +36,17 @@ class NameInputPage extends StatelessWidget {
             "This will be shown to other users",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
           ),
           const SizedBox(height: 32),
           TextField(
             controller: nameController,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: "Full Name",
               hintText: "Enter your full name",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.person),
+              prefixIcon: const Icon(Icons.person, color: Colors.white70),
             ),
             onChanged: (value) => onNameChanged(), // Calls setState in parent
           ),

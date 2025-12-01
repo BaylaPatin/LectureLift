@@ -20,7 +20,7 @@ class EmailInputPage extends StatelessWidget {
           const Icon(
             Icons.email_outlined,
             size: 100,
-            color: Colors.blue,
+            color: Colors.white,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -28,6 +28,7 @@ class EmailInputPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -35,22 +36,21 @@ class EmailInputPage extends StatelessWidget {
             "It must be a valid LSU email address. This is to confirm you are a student.",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           TextField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: "Email",
               hintText: "example@lsu.edu",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.email),
+              prefixIcon: const Icon(Icons.email, color: Colors.white70),
             ),
-            onChanged: (value) => onEmailChanged(), // Calls setState in parent
+            onChanged: (value) => onEmailChanged(),
           ),
         ],
       ),

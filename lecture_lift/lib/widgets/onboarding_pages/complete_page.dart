@@ -22,7 +22,7 @@ class CompletePage extends StatelessWidget {
           const Icon(
             Icons.check_circle_outline,
             size: 120,
-            color: Colors.green,
+            color: Colors.greenAccent,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -30,6 +30,7 @@ class CompletePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 24),
@@ -38,7 +39,7 @@ class CompletePage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 20,
-              color: Colors.black87,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -47,7 +48,7 @@ class CompletePage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
           ),
           const SizedBox(height: 48),
@@ -56,7 +57,7 @@ class CompletePage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.black54,
+              color: Colors.white70,
               height: 1.5,
             ),
           ),

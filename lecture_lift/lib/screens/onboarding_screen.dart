@@ -5,6 +5,8 @@ import '../services/location_service.dart';
 import '../widgets/onboarding_pages/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'map_screen.dart';
+import '../theme/app_theme.dart';
+import '../widgets/glass_gradient_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String? userId;
@@ -47,7 +49,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.darkBackground,
       body: SafeArea(
         child: Stack(
           children: [
@@ -59,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, size: 28),
+                      icon: const Icon(Icons.arrow_back, size: 28, color: Colors.white),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -142,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                 const SizedBox(height: 32),
 
-                // Navigation buttons (remains the same)
+                // Navigation buttons
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Row(
@@ -154,28 +156,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           onPressed: _isSaving ? null : _previousPage,
                           child: const Text(
                             "Back",
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, color: Colors.white70),
                           ),
                         )
                       else
                         const SizedBox(width: 60),
 
                       // Next/Get Started button
-                      ElevatedButton(
+                      GlassGradientButton(
                         onPressed: (_canProceed() && !_isSaving)
                             ? (_isLastPage ? _completeOnboarding : _nextPage)
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          disabledBackgroundColor: Colors.grey.shade300,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        width: 140,
+                        gradient: AppTheme.purpleGradient,
                         child: _isSaving
                             ? const SizedBox(
                                 width: 20,
@@ -201,10 +194,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
             
-            // Loading overlay (remains the same)
+            // Loading overlay
             if (_isSaving)
               Container(
-                color: Colors.black26,
+                color: Colors.black54,
                 child: const Center(
                   child: CircularProgressIndicator(),
                 ),
