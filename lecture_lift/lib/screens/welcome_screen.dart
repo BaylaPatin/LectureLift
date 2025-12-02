@@ -3,6 +3,7 @@ import 'login_screen.dart';
 import 'onboarding_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_gradient_button.dart';
+import '../widgets/lecture_lift_logo.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -18,56 +19,30 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(),
+              const Spacer(flex: 2),
               
-              // App Logo/Icon
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: AppTheme.purpleGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryPurple.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.school,
-                  size: 72,
-                  color: Colors.white,
+              // Centered Logo - responsive size
+              Center(
+                child: LectureLiftLogo(
+                  height: MediaQuery.of(context).size.width * 0.30, // 30% of screen width - reduced from 40%
                 ),
               ),
               
-              const SizedBox(height: 24),
-              
-              // App Name
-              const Text(
-                'LectureLift',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               
               // Tagline
               Text(
-                'Your campus companion',
+                'YOUR CAMPUS COMPANION',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
-                  color: AppTheme.secondaryColor,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.8),
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 3.0,
                 ),
               ),
               
-              const Spacer(),
+              const Spacer(flex: 3),
               
               // Sign Up Button
               GlassGradientButton(
@@ -95,9 +70,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   );
                 },
-                gradient: AppTheme.purpleGradient.scale(0.5), // Slightly dimmer or just outline effect? 
-                // Actually, let's just use the same button but maybe different gradient or just standard
-                // User asked for "purple and pink gradient" for these screens.
+                gradient: AppTheme.purpleGradient.scale(0.5),
                 child: const Text('Log In'),
               ),
               

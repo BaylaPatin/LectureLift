@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../services/auth_state.dart';
+import '../services/auth_service.dart';
 import '../services/location_service.dart';
 import '../widgets/onboarding_pages/index.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'map_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_gradient_button.dart';
+import '../widgets/lecture_lift_logo.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String? userId;
@@ -23,6 +25,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   final DatabaseService _dbService = DatabaseService();
+  final AuthService _authService = AuthService();
 
   int _currentPage = 0;
   bool _isSaving = false;
@@ -50,25 +53,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
+      body: Stack(
+        children: [
+          // Main onboarding content
+          SafeArea(
+            child: Stack(
               children: [
-                // Back to Welcome button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, size: 28, color: Colors.white),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      tooltip: 'Back to Welcome',
+                Column(
+                  children: [
+                    // Back to Welcome button
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, size: 28, color: Colors.white),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          tooltip: 'Back to Welcome',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
 
                 // PageView
                 Expanded(
@@ -94,11 +100,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         confirmPasswordController: _confirmPasswordController,
                         onPasswordChanged: () => setState(() {}),
                       ),
-                      PhoneInputPage( // Index 3
+                      EmailVerificationPage( // Index 3
+                        email: _emailController.text.trim(),
+                      ),
+                      PhoneInputPage( // Index 4
                         phoneController: _phoneController,
                         onPhoneChanged: () => setState(() {}),
                       ),
-                      RoleSelectionPage( // Index 4
+                      RoleSelectionPage( // Index 5
                         userRole: _userRole,
                         onRoleSelected: (role) {
                           setState(() {
@@ -106,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           });
                         },
                       ),
-                      LocationPermissionPage( // Index 5
+                      LocationPermissionPage( // Index 6
                         onPermissionGranted: () async {
                           // Save location to Firestore when permission is granted
                           final userId = _emailController.text.trim();
@@ -125,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           );
                         },
                       ),
-                      CompletePage( // Index 6
+                      CompletePage( // Index 7
                         userName: _nameController.text.trim(),
                         userRole: _userRole,
                       ),
@@ -137,7 +146,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    7,
+                    8, // Updated to 8 pages
                     (index) => _buildIndicator(index == _currentPage),
                   ),
                 ),
@@ -151,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back button
-                      if (_currentPage > 0 && _currentPage < 7)
+                      if (_currentPage > 0 && _currentPage < 8 && _currentPage != 3) // Hide back button on verification page
                         TextButton(
                           onPressed: _isSaving ? null : _previousPage,
                           child: const Text(
@@ -205,6 +214,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ],
         ),
       ),
+      
+      // Logo in top left corner
+      SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: LectureLiftLogo(height: 60),
+          ),
+        ),
+      ),
+    ],
+  ),
     );
   }
 
@@ -215,46 +237,98 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8,
       width: isActive ? 24 : 8,
       decoration: BoxDecoration(
-        color: isActive ? Colors.blue : Colors.grey.shade300,
+        color: isActive ? AppTheme.primaryPurple : AppTheme.primaryYellow.withOpacity(0.3),
         borderRadius: BorderRadius.circular(4),
       ),
     );
   }
 
-  bool get _isLastPage => _currentPage == 6;
+  bool get _isLastPage => _currentPage == 7; // Updated to 7 (0-indexed)
 
   bool _canProceed() {
     switch (_currentPage) {
       case 0:
         return _nameController.text.trim().isNotEmpty; // Name
       case 1:
-        return _emailController.text.trim().isNotEmpty && 
-               _emailController.text.contains('@'); // Email
+        return AuthService.isValidLSUEmail(_emailController.text); // LSU Email validation
       case 2:
         return _passwordController.text.length >= 6 && 
                _passwordController.text == _confirmPasswordController.text; // Password
       case 3:
+        return false; // Email Verification (handled by page itself)
+      case 4:
         final digitsOnly = _phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
         return digitsOnly.length == 10; // Phone
-      case 4:
-        return _userRole.isNotEmpty; // Role
       case 5:
-        return true; // Location Permission (can skip)
+        return _userRole.isNotEmpty; // Role
       case 6:
+        return true; // Location Permission (can skip)
+      case 7:
         return true; // Complete Screen
       default:
         return false;
     }
   }
 
-  void _nextPage() {
-    if (_canProceed()) {
+  Future<void> _nextPage() async {
+    if (!_canProceed()) return;
+
+    // If moving from password page (2) to verification page (3), create account first
+    if (_currentPage == 2) {
+      setState(() {
+        _isSaving = true;
+      });
+
+      try {
+        // Create Firebase account
+        await _authService.signUpWithEmail(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+
+        // Send verification email
+        await _authService.sendEmailVerification();
+
+        if (!mounted) return;
+
+        // Move to verification page
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } catch (e) {
+        if (!mounted) return;
+        
+        // Show error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Signup Error'),
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSaving = false;
+          });
+        }
+      }
+    } else {
+      // For all other pages, just move to next page
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
   }
+
 
   void _previousPage() {
     _pageController.previousPage(

@@ -38,13 +38,20 @@ class AppTheme {
   );
   
   static const LinearGradient purpleGradient = LinearGradient(
-    colors: [primaryPurple, primaryPink],
+    colors: [primaryPurple, primaryYellow], // Updated to LSU Purple & Gold
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   
   static const LinearGradient yellowGradient = LinearGradient(
-    colors: [primaryYellow, primaryPink],
+    colors: [primaryYellow, primaryPurple], // Reverse LSU Gradient
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  // LSU Theme Gradient - Purple to Gold
+  static const LinearGradient lsuGradient = LinearGradient(
+    colors: [primaryPurple, primaryYellow],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

@@ -1,7 +1,9 @@
 export 'complete_page.dart';
 export 'email_input_page.dart';
+export 'email_verification_page.dart';
 export 'location_permission_page.dart';
 export 'name_input_page.dart';
 export 'password_input_page.dart';
 export 'phone_input_page.dart';
 export 'role_selection_page.dart';
+
