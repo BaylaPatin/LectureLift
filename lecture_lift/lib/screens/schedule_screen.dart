@@ -113,10 +113,17 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
-        title: const Text('My Schedule'),
+        title: const Text('My Schedule', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        elevation: 0,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: AppTheme.primaryPurple,
+          unselectedLabelColor: Colors.white60,
+          indicatorColor: AppTheme.primaryPurple,
           tabs: const [
             Tab(icon: Icon(Icons.calendar_month), text: 'Schedule'),
             Tab(icon: Icon(Icons.add_circle_outline), text: 'Add Class'),
@@ -185,21 +192,21 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             Icon(
               Icons.event_busy,
               size: 80,
-              color: Colors.grey[400],
+              color: Colors.white24,
             ),
             const SizedBox(height: 16),
             Text(
               'No classes yet',
               style: Theme.of(context).textTheme.displayMedium?.copyWith(
                 fontSize: 20,
-                color: Colors.grey[600],
+                color: Colors.white70,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Add a class or import your calendar',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
+                color: Colors.white38,
               ),
             ),
           ],
@@ -221,21 +228,31 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             });
           },
           calendarStyle: CalendarStyle(
+            defaultTextStyle: const TextStyle(color: Colors.white),
+            weekendTextStyle: const TextStyle(color: Colors.white70),
+            outsideTextStyle: const TextStyle(color: Colors.white24),
             selectedDecoration: BoxDecoration(
-              color: AppTheme.primaryColor,
+              color: AppTheme.primaryPurple,
               shape: BoxShape.circle,
             ),
             todayDecoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.5),
+              color: AppTheme.primaryPurple.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            markerDecoration: const BoxDecoration(
+              color: AppTheme.primaryYellow,
               shape: BoxShape.circle,
             ),
           ),
           headerStyle: const HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
+            titleTextStyle: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+            rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
           ),
         ),
-        const Divider(),
+        const Divider(color: Colors.white24),
         Expanded(
           child: _buildClassList(),
         ),
@@ -250,7 +267,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       return Center(
         child: Text(
           'No classes on ${_getDayName((_selectedDay ?? _focusedDay).weekday)}',
-          style: TextStyle(color: Colors.grey[600]),
+          style: const TextStyle(color: Colors.white54),
         ),
       );
     }
@@ -263,13 +280,14 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           elevation: 2,
+          color: AppTheme.darkSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.all(16),
             leading: CircleAvatar(
-              backgroundColor: AppTheme.primaryColor,
+              backgroundColor: AppTheme.primaryPurple.withOpacity(0.2),
               child: Text(
                 session.className.substring(0, 1).toUpperCase(),
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -277,7 +295,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             ),
             title: Text(
               session.className,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,25 +303,26 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                    const Icon(Icons.access_time, size: 16, color: Colors.white70),
                     const SizedBox(width: 4),
                     Text(
                       '${session.startTime.format(context)} - ${session.endTime.format(context)}',
+                      style: const TextStyle(color: Colors.white70),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    const Icon(Icons.location_on, size: 16, color: Colors.white70),
                     const SizedBox(width: 4),
-                    Text(session.location),
+                    Text(session.location, style: const TextStyle(color: Colors.white70)),
                   ],
                 ),
               ],
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
               onPressed: () async {
                 setState(() {
                   _schedule.remove(session);

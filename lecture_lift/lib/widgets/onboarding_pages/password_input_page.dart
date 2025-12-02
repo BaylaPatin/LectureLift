@@ -57,7 +57,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           const Icon(
             Icons.lock_outline,
             size: 100,
-            color: Colors.blue,
+            color: Colors.white,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -65,6 +65,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -72,7 +73,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
             "Choose a strong password to secure your account",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
             textAlign: TextAlign.center,
           ),
@@ -80,16 +81,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           TextField(
             controller: widget.passwordController,
             obscureText: _obscurePassword,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: "Password",
               hintText: "Enter your password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.lock),
+              prefixIcon: const Icon(Icons.lock, color: Colors.white70),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white70,
                 ),
                 onPressed: () {
                   setState(() {
@@ -108,7 +108,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                   'Strength: ',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Colors.white70,
                   ),
                 ),
                 Text(
@@ -126,16 +126,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
           TextField(
             controller: widget.confirmPasswordController,
             obscureText: _obscureConfirmPassword,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: "Confirm Password",
               hintText: "Re-enter your password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.lock),
+              prefixIcon: const Icon(Icons.lock, color: Colors.white70),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white70,
                 ),
                 onPressed: () {
                   setState(() {

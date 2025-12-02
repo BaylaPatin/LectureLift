@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Purple and Yellow Color Palette - Modern & Unique
-  static const Color primaryPurple = Color(0xFF6B4CE6); // Vibrant Purple
-  static const Color deepPurple = Color(0xFF4A2FB8); // Deep Purple (darker shade)
-  static const Color lightPurple = Color(0xFF9B8FF5); // Light Purple (for accents)
+  // Mint Green Color Palette - Fresh & Modern
+  static const Color mintGreen = Color(0xFF7FFFD4); // Aquamarine Mint
+  static const Color lightMint = Color(0xFF9FFFED); // Light Mint
+  static const Color deepMint = Color(0xFF5FD8B8); // Deep Mint
   
-  static const Color primaryYellow = Color(0xFFFFC947); // Warm Golden Yellow
-  static const Color brightYellow = Color(0xFFFFD666); // Bright Yellow (lighter shade)
-  static const Color deepYellow = Color(0xFFE6B031); // Deep Yellow (darker shade)
+  // Keep purple for backwards compatibility
+  static const Color primaryPurple = Color(0xFF6B4CE6);
+  static const Color primaryYellow = Color(0xFFFFC947);
   
   // Neutral Colors
-  static const Color backgroundColor = Color(0xFFF8F7FF); // Very light purple tint
   static const Color surfaceColor = Colors.white;
   static const Color darkGrey = Color(0xFF2D2D2D);
   static const Color mediumGrey = Color(0xFF666666);
@@ -21,53 +20,94 @@ class AppTheme {
   // Accent & State Colors
   static const Color errorColor = Color(0xFFE63946);
   static const Color successColor = Color(0xFF06D6A0);
+  
+  // Backward compatibility getters for existing code
+  // Pink Color for Gradients
+  static const Color primaryPink = Color(0xFFFF69B4); // Hot Pink
+  static const Color deepPink = Color(0xFFC51162); // Deep Pink
+
+  // Dark Theme Colors - Washed Out Dark Grey
+  static const Color darkBackground = Color(0xFF3A3A3A); // Washed out dark grey
+  static const Color darkSurface = Color(0xFF4A4A4A); // Slightly lighter dark grey
+
+  // Gradient Presets for Modern Look - Mint Green
+  static const LinearGradient mintGradient = LinearGradient(
+    colors: [lightMint, deepMint],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  static const LinearGradient purpleGradient = LinearGradient(
+    colors: [primaryPurple, primaryYellow], // Updated to LSU Purple & Gold
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  static const LinearGradient yellowGradient = LinearGradient(
+    colors: [primaryYellow, primaryPurple], // Reverse LSU Gradient
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  // LSU Theme Gradient - Purple to Gold
+  static const LinearGradient lsuGradient = LinearGradient(
+    colors: [primaryPurple, primaryYellow],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  // Role-based Gradients
+  static LinearGradient get driverGradient => purpleGradient;
+  static LinearGradient get riderGradient => purpleGradient;
 
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       primaryColor: primaryPurple,
-      scaffoldBackgroundColor: backgroundColor,
-      colorScheme: ColorScheme.light(
+      scaffoldBackgroundColor: darkBackground, // Dark Background
+      colorScheme: ColorScheme.dark( // Switch to dark scheme
         primary: primaryPurple,
         secondary: primaryYellow,
-        tertiary: lightPurple,
-        surface: surfaceColor,
+        tertiary: primaryPink,
+        surface: darkSurface,
         error: errorColor,
         onPrimary: Colors.white,
-        onSecondary: darkGrey,
-        onSurface: darkGrey,
+        onSecondary: Colors.black,
+        onSurface: Colors.white,
         onError: Colors.white,
+        background: darkBackground,
+        onBackground: Colors.white,
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.poppins(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: darkGrey,
+          color: Colors.white,
           letterSpacing: -0.5,
         ),
         displayMedium: GoogleFonts.poppins(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: darkGrey,
+          color: Colors.white,
           letterSpacing: -0.5,
         ),
         headlineMedium: GoogleFonts.poppins(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          color: darkGrey,
+          color: Colors.white,
         ),
         titleLarge: GoogleFonts.poppins(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: darkGrey,
+          color: Colors.white,
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
-          color: mediumGrey,
+          color: Colors.white70,
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
-          color: mediumGrey,
+          color: Colors.white70,
         ),
         labelLarge: GoogleFonts.inter(
           fontSize: 14,
@@ -77,7 +117,7 @@ class AppTheme {
         ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: primaryPurple,
+        backgroundColor: Colors.transparent, // Transparent for glass effect
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -88,104 +128,41 @@ class AppTheme {
           letterSpacing: 0.15,
         ),
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryPurple,
-          foregroundColor: Colors.white,
-          textStyle: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          elevation: 2,
-          shadowColor: primaryPurple.withOpacity(0.4),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primaryPurple,
-          side: const BorderSide(color: primaryPurple, width: 2),
-          textStyle: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primaryPurple,
-          textStyle: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      // ... keep other themes if needed, but we are making custom buttons
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceColor,
+        fillColor: darkSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightGrey),
+          borderSide: BorderSide(color: Colors.white24),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightGrey),
+          borderSide: BorderSide(color: Colors.white24),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryPurple, width: 2),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: errorColor, width: 2),
-        ),
-        hintStyle: GoogleFonts.inter(color: mediumGrey.withOpacity(0.6)),
-        labelStyle: GoogleFonts.inter(color: mediumGrey),
-        floatingLabelStyle: GoogleFonts.inter(color: primaryPurple),
+        hintStyle: GoogleFonts.inter(color: Colors.white38),
+        labelStyle: GoogleFonts.inter(color: Colors.white70),
       ),
       cardTheme: CardThemeData(
-        color: surfaceColor,
-        elevation: 2,
-        shadowColor: darkGrey.withOpacity(0.1),
+        color: darkSurface,
+        elevation: 4,
+        shadowColor: Colors.black45,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
       ),
       iconTheme: const IconThemeData(
-        color: primaryPurple,
+        color: Colors.white,
       ),
     );
   }
   
-  // Backward compatibility getters for existing code
+  // Backward compatibility getters
   static Color get primaryColor => primaryPurple;
   static Color get secondaryColor => primaryYellow;
-  
-  // Gradient Presets for Modern Look
-  static const LinearGradient purpleGradient = LinearGradient(
-    colors: [primaryPurple, deepPurple],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-  
-  static const LinearGradient yellowGradient = LinearGradient(
-    colors: [brightYellow, deepYellow],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-  
-  static const LinearGradient purpleYellowGradient = LinearGradient(
-    colors: [primaryPurple, primaryYellow],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  static Color get backgroundColor => darkBackground; // Update getter
 }

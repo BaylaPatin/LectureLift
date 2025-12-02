@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
 
-class EmailInputPage extends StatelessWidget {
+class EmailInputPage extends StatefulWidget {
   final TextEditingController emailController;
   final VoidCallback onEmailChanged;
 
@@ -11,7 +12,20 @@ class EmailInputPage extends StatelessWidget {
   });
 
   @override
+  State<EmailInputPage> createState() => _EmailInputPageState();
+}
+
+class _EmailInputPageState extends State<EmailInputPage> {
+  bool _showValidation = false;
+
+  bool get _isValidLSUEmail {
+    return AuthService.isValidLSUEmail(widget.emailController.text);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final hasText = widget.emailController.text.isNotEmpty;
+    
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -20,7 +34,7 @@ class EmailInputPage extends StatelessWidget {
           const Icon(
             Icons.email_outlined,
             size: 100,
-            color: Colors.blue,
+            color: Colors.white,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -28,30 +42,73 @@ class EmailInputPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
           const Text(
-            "It must be a valid LSU email address. This is to confirm you are a student.",
+            "You must use your LSU email address to sign up.",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           TextField(
-            controller: emailController,
+            controller: widget.emailController,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: "Email",
               hintText: "example@lsu.edu",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.email),
+              prefixIcon: const Icon(Icons.email, color: Colors.white70),
+              suffixIcon: hasText
+                  ? Icon(
+                      _isValidLSUEmail ? Icons.check_circle : Icons.error,
+                      color: _isValidLSUEmail ? Colors.green : Colors.red,
+                    )
+                  : null,
             ),
-            onChanged: (value) => onEmailChanged(), // Calls setState in parent
+            onChanged: (value) {
+              setState(() {
+                _showValidation = true;
+              });
+              widget.onEmailChanged();
+            },
           ),
+          if (_showValidation && hasText && !_isValidLSUEmail) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: const [
+                Icon(Icons.error, color: Colors.red, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  'Must be a valid @lsu.edu email address',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (_showValidation && _isValidLSUEmail) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: const [
+                Icon(Icons.check_circle, color: Colors.green, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  'Valid LSU email',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

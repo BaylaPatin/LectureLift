@@ -3,6 +3,7 @@ import '../services/database_service.dart';
 import '../services/auth_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_bottom_navigation_bar.dart';
+import '../widgets/glass_gradient_button.dart';
 import 'map_screen.dart';
 import 'schedule_screen.dart';
 import 'profile_screen.dart';
@@ -78,16 +79,20 @@ class _FindRideScreenState extends State<FindRideScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
-        title: Text(_userRole == 'driver' ? 'Ride Requests' : 'Find a Ride'),
-        backgroundColor: AppTheme.primaryPurple,
+        title: Text(
+          _userRole == 'driver' ? 'Ride Requests' : 'Find a Ride',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : _error != null
-              ? Center(child: Text('Error: $_error'))
+              ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
               : _userRole == 'driver'
                   ? _buildDriverView()
                   : _buildRiderView(),
@@ -148,18 +153,18 @@ class _FindRideScreenState extends State<FindRideScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('Debug: Listening for requests for $_currentUserId', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          child: Text('Debug: Listening for requests for $_currentUserId', style: const TextStyle(fontSize: 10, color: Colors.white30)),
         ),
         Expanded(
           child: StreamBuilder<List<Map<String, dynamic>>>(
             stream: _dbService.getIncomingRequests(_currentUserId!),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator(color: Colors.white));
               }
 
               final requests = snapshot.data ?? [];
@@ -188,16 +193,16 @@ class _FindRideScreenState extends State<FindRideScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.directions_car_outlined, size: 80, color: Colors.grey[400]),
+          Icon(Icons.directions_car_outlined, size: 80, color: Colors.white24),
           const SizedBox(height: 16),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[600]),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.white38),
             textAlign: TextAlign.center,
           ),
         ],
@@ -210,7 +215,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
     
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
+      elevation: 4,
+      color: AppTheme.darkSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -220,8 +226,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppTheme.primaryPurple.withOpacity(0.1),
-                  child: const Icon(Icons.person, color: AppTheme.primaryPurple),
+                  backgroundColor: AppTheme.primaryPurple.withOpacity(0.2),
+                  child: const Icon(Icons.person, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -233,38 +239,38 @@ class _FindRideScreenState extends State<FindRideScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                       Text(
                         '${matches.length} matching classes',
-                        style: TextStyle(
-                          color: Colors.grey[600],
+                        style: const TextStyle(
+                          color: Colors.white70,
                           fontSize: 14,
                         ),
                       ),
                     ],
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () => _requestRide(driver),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryPurple,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Text('Request'),
-                ),
               ],
             ),
-            const Divider(height: 24),
+            const SizedBox(height: 16),
+            GlassGradientButton(
+              onPressed: () => _requestRide(driver),
+              gradient: AppTheme.riderGradient,
+              height: 40,
+              child: const Text(
+                'Request Ride',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+            const Divider(height: 24, color: Colors.white24),
             const Text(
               'Matching Schedule:',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: Colors.grey,
+                color: Colors.white54,
               ),
             ),
             const SizedBox(height: 8),
@@ -274,7 +280,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 children: [
                   const Icon(Icons.schedule, size: 16, color: AppTheme.primaryYellow),
                   const SizedBox(width: 8),
-                  Text(match),
+                  Text(match, style: const TextStyle(color: Colors.white70)),
                 ],
               ),
             )).toList(),
@@ -289,7 +295,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
     
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
+      elevation: 4,
+      color: AppTheme.darkSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -299,8 +306,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppTheme.primaryPurple.withOpacity(0.1),
-                  child: const Icon(Icons.person, color: AppTheme.primaryPurple),
+                  backgroundColor: AppTheme.primaryPurple.withOpacity(0.2),
+                  child: const Icon(Icons.person, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -312,12 +319,13 @@ class _FindRideScreenState extends State<FindRideScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Requesting a ride',
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: Colors.white70,
                           fontSize: 14,
                         ),
                       ),
@@ -326,13 +334,13 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 ),
               ],
             ),
-            const Divider(height: 24),
+            const Divider(height: 24, color: Colors.white24),
             const Text(
               'Matching Schedule:',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: Colors.grey,
+                color: Colors.white54,
               ),
             ),
             const SizedBox(height: 8),
@@ -342,7 +350,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 children: [
                   const Icon(Icons.schedule, size: 16, color: AppTheme.primaryYellow),
                   const SizedBox(width: 8),
-                  Text(match.toString()),
+                  Text(match.toString(), style: const TextStyle(color: Colors.white70)),
                 ],
               ),
             )).toList(),
@@ -351,16 +359,17 @@ class _FindRideScreenState extends State<FindRideScreen> {
             if (request['riderLocation'] != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _viewRoute(request),
-                    icon: const Icon(Icons.directions),
-                    label: const Text('View Route'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryPurple,
-                      foregroundColor: Colors.white,
-                    ),
+                child: GlassGradientButton(
+                  onPressed: () => _viewRoute(request),
+                  gradient: AppTheme.driverGradient,
+                  height: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.directions, color: Colors.white, size: 18),
+                      SizedBox(width: 8),
+                      Text('View Route', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ],
                   ),
                 ),
               ),
@@ -370,21 +379,20 @@ class _FindRideScreenState extends State<FindRideScreen> {
                   child: OutlinedButton(
                     onPressed: () => _updateRequestStatus(request['requestId'], 'rejected'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                      foregroundColor: Colors.redAccent,
+                      side: const BorderSide(color: Colors.redAccent),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: const Text('Reject'),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton(
+                  child: GlassGradientButton(
                     onPressed: () => _updateRequestStatus(request['requestId'], 'accepted'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Accept'),
+                    gradient: AppTheme.driverGradient, // Or maybe a green gradient if available, but staying consistent
+                    height: 40,
+                    child: const Text('Accept', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

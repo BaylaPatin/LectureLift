@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../theme/app_theme.dart';
+import '../glass_gradient_button.dart';
 
 class LocationPermissionPage extends StatefulWidget {
   final VoidCallback onPermissionGranted;
@@ -46,9 +48,11 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Location Permission Needed'),
+        backgroundColor: AppTheme.darkSurface,
+        title: const Text('Location Permission Needed', style: TextStyle(color: Colors.white)),
         content: const Text(
           'LectureLift needs location permission to show you nearby students and help you carpool. Your exact location is never shared - we approximate it for privacy.',
+          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -74,9 +78,11 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Enable Location in Settings'),
+        backgroundColor: AppTheme.darkSurface,
+        title: const Text('Enable Location in Settings', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Location permission was permanently denied. You can enable it in your device settings.',
+          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -108,7 +114,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
           const Icon(
             Icons.location_on,
             size: 100,
-            color: Colors.blue,
+            color: Colors.white,
           ),
           const SizedBox(height: 48),
           const Text(
@@ -116,6 +122,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -123,7 +130,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
             "Find nearby students and connect for carpooling",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.black54,
+              color: Colors.white70,
             ),
             textAlign: TextAlign.center,
           ),
@@ -133,21 +140,22 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: AppTheme.darkSurface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.withOpacity(0.3)),
+              border: Border.all(color: Colors.white24),
             ),
             child: Column(
               children: [
                 Row(
                   children: [
-                    Icon(Icons.shield, color: Colors.blue, size: 24),
+                    Icon(Icons.shield, color: AppTheme.primaryPurple, size: 24),
                     const SizedBox(width: 8),
                     const Text(
                       'Your Privacy Protected',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -161,6 +169,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
+                    color: Colors.white70,
                   ),
                 ),
               ],
@@ -170,35 +179,26 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
           const SizedBox(height: 48),
           
           // Allow button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isRequesting ? null : _requestPermission,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: _isRequesting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : const Text(
-                      'Allow Location Access',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+          GlassGradientButton(
+            onPressed: _isRequesting ? null : _requestPermission,
+            gradient: AppTheme.purpleGradient,
+            child: _isRequesting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
-            ),
+                  )
+                : const Text(
+                    'Allow Location Access',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
           
           const SizedBox(height: 16),
@@ -210,7 +210,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
               'Skip for now',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: Colors.white54,
               ),
             ),
           ),
