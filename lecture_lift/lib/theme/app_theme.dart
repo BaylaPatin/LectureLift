@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Purple and Yellow Color Palette - Modern & Unique
-  static const Color primaryPurple = Color(0xFF6B4CE6); // Vibrant Purple
-  static const Color deepPurple = Color(0xFF4A2FB8); // Deep Purple (darker shade)
-  static const Color lightPurple = Color(0xFF9B8FF5); // Light Purple (for accents)
+  // Mint Green Color Palette - Fresh & Modern
+  static const Color mintGreen = Color(0xFF7FFFD4); // Aquamarine Mint
+  static const Color lightMint = Color(0xFF9FFFED); // Light Mint
+  static const Color deepMint = Color(0xFF5FD8B8); // Deep Mint
   
-  static const Color primaryYellow = Color(0xFFFFC947); // Warm Golden Yellow
-  static const Color brightYellow = Color(0xFFFFD666); // Bright Yellow (lighter shade)
-  static const Color deepYellow = Color(0xFFE6B031); // Deep Yellow (darker shade)
+  // Keep purple for backwards compatibility
+  static const Color primaryPurple = Color(0xFF6B4CE6);
+  static const Color primaryYellow = Color(0xFFFFC947);
   
   // Neutral Colors
   static const Color surfaceColor = Colors.white;
@@ -26,11 +26,17 @@ class AppTheme {
   static const Color primaryPink = Color(0xFFFF69B4); // Hot Pink
   static const Color deepPink = Color(0xFFC51162); // Deep Pink
 
-  // Dark Theme Colors
-  static const Color darkBackground = Color(0xFF1A1A2E); // Dark Blue/Grey
-  static const Color darkSurface = Color(0xFF16213E); // Slightly lighter dark
+  // Dark Theme Colors - Washed Out Dark Grey
+  static const Color darkBackground = Color(0xFF3A3A3A); // Washed out dark grey
+  static const Color darkSurface = Color(0xFF4A4A4A); // Slightly lighter dark grey
 
-  // Gradient Presets for Modern Look
+  // Gradient Presets for Modern Look - Mint Green
+  static const LinearGradient mintGradient = LinearGradient(
+    colors: [lightMint, deepMint],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
   static const LinearGradient purpleGradient = LinearGradient(
     colors: [primaryPurple, primaryPink],
     begin: Alignment.topLeft,
@@ -45,7 +51,7 @@ class AppTheme {
   
   // Role-based Gradients
   static LinearGradient get driverGradient => purpleGradient;
-  static LinearGradient get riderGradient => purpleGradient; // Unified gradient as requested
+  static LinearGradient get riderGradient => purpleGradient;
 
   static ThemeData get lightTheme {
     return ThemeData(

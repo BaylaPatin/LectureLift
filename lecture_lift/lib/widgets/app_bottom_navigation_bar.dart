@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int selectedIndex;
@@ -13,52 +14,52 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+      height: 60, // Smaller height
+      margin: const EdgeInsets.fromLTRB(24, 0, 24, 20), // Reduced bottom margin
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        gradient: AppTheme.purpleGradient, // Gradient background
+        borderRadius: BorderRadius.circular(20), // Slightly less rounded
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: AppTheme.primaryPurple.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: selectedIndex,
-          selectedItemColor: const Color(0xFF6C63FF),
-          unselectedItemColor: Colors.grey[400],
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          onTap: onItemTapped,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              activeIcon: Icon(Icons.map),
-              label: 'Map',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today),
-              label: 'Schedule',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.directions_car_outlined),
-              activeIcon: Icon(Icons.directions_car),
-              label: 'Rides',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
+        borderRadius: BorderRadius.circular(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.map_outlined, Icons.map, 0, 'Map'),
+            _buildNavItem(Icons.calendar_today_outlined, Icons.calendar_today, 1, 'Schedule'),
+            _buildNavItem(Icons.directions_car_outlined, Icons.directions_car, 2, 'Rides'),
+            _buildNavItem(Icons.person_outline, Icons.person, 3, 'Profile'),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, IconData activeIcon, int index, String label) {
+    final isSelected = selectedIndex == index;
+    
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onItemTapped(index),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            height: double.infinity,
+            alignment: Alignment.center,
+            child: Icon(
+              isSelected ? activeIcon : icon,
+              color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
+              size: 24, // Optimized icon size
+            ),
+          ),
         ),
       ),
     );
