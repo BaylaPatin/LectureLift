@@ -1,4 +1,5 @@
 # LectureLift
+# Members: Bayla Patin, Thomas Shimer, Anthony Raemsch, Megan White, Makayla Files 
 
 **Ride-sharing for students, by students.**
 
@@ -6,10 +7,9 @@ LectureLift ensures you never have to worry about getting to class. Connect with
 
 ## Core Features
 - **🎓 Edu-Verification**: Exclusive access for students with valid `.edu` emails.
-- **📸 Photo Verification**: Enhanced security with verified user profiles.
-- **⭐ Trust System**: Profile ratings and driving scores to ensure safety.
-- **🎁 Driver Incentives**: Earn rewards and recognition for helping peers.
-- **📍 Smart Routing**: Route matching based on class schedules and location.
+- **📅 Class Schedule**: Import your schedule via `.ics` file or add classes manually.
+- **⭐ Dual Rating System**: Dedicated tabs and ratings for both Riders and Drivers.
+- **🔍 Smart Filtering**: Filter rides based on matching class schedules.
 
 ## Prerequisites
 
@@ -42,18 +42,6 @@ Android Studio is required only to manage the Android Virtual Device (AVD).
 4.  Press **F5** (or click the green play button) to start debugging.
     *   *Alternatively, run `flutter run` in the VS Code terminal.*
 
-## Troubleshooting
-
-### API Key Issues
-If you see a blank map or routing fails:
-- Ensure your Google Maps API Key is valid.
-- Check that the **Maps SDK for Android** and **Directions API** are enabled in your Google Cloud Console.
-- If running on an emulator, ensure the emulator has internet access.
-
-### "Forbidden" Error
-If you see a "Forbidden" error when searching:
-- This usually happens if API key restrictions are set incorrectly.
-- For development, ensure your API key allows requests from your Android package name (`com.example.lecture_lift`).
 
 ## Project Structure
 - `lib/screens/`: Contains the main application screens (e.g., `MapScreen`).
