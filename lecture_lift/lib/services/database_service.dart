@@ -201,7 +201,7 @@ class DatabaseService {
         }
         
         // Calculate distance using approximate location
-        final distance = _calculateDistance(centerLat, centerLng, approxLat, approxLng);
+        final distance = calculateDistance(centerLat, centerLng, approxLat, approxLng);
         print('DEBUG: User ${doc.id} distance: $distance km');
         
         // If radiusKm is null, include everyone. Otherwise check distance.
@@ -231,7 +231,7 @@ class DatabaseService {
   }
 
   // Calculate distance between two points using Haversine formula
-  double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+  double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
     const double earthRadiusKm = 6371.0;
     
     final dLat = _degreesToRadians(lat2 - lat1);
@@ -410,7 +410,7 @@ class DatabaseService {
     return _db
         .collection('ride_requests')
         .where('driverId', isEqualTo: driverId)
-        .where('status', isEqualTo: 'pending')
+        // .where('status', isEqualTo: 'pending') // Removed to show accepted/active requests too
         // .orderBy('timestamp', descending: true) // Removed to avoid index issues
         .snapshots()
         .asyncMap((snapshot) async {
@@ -418,6 +418,9 @@ class DatabaseService {
           final requests = <Map<String, dynamic>>[];
           for (var doc in snapshot.docs) {
             final data = doc.data();
+            // Filter out rejected and completed requests for active view
+            if (data['status'] == 'rejected' || data['status'] == 'completed') continue;
+
             print('DEBUG: Processing request ${doc.id}: $data');
             // Fetch rider details
             final riderProfile = await getUserProfile(data['riderId']);
@@ -447,10 +450,226 @@ class DatabaseService {
         });
   }
 
+  // Stream of completed requests for a driver (History)
+  Stream<List<Map<String, dynamic>>> getCompletedRequests(String driverId) {
+    return _db
+        .collection('ride_requests')
+        .where('driverId', isEqualTo: driverId)
+        .where('status', isEqualTo: 'completed')
+        .snapshots()
+        .asyncMap((snapshot) async {
+          final requests = <Map<String, dynamic>>[];
+          for (var doc in snapshot.docs) {
+            final data = doc.data();
+            final riderProfile = await getUserProfile(data['riderId']);
+            
+            requests.add({
+              'requestId': doc.id,
+              ...data,
+              'riderName': riderProfile?['displayName'] ?? 'Unknown Rider',
+            });
+          }
+          
+          // Sort by timestamp descending
+          requests.sort((a, b) {
+            final t1 = a['timestamp'] as Timestamp?;
+            final t2 = b['timestamp'] as Timestamp?;
+            if (t1 == null || t2 == null) return 0;
+            return t2.compareTo(t1);
+          });
+          
+          return requests;
+        });
+  }
+
   // Update request status
   Future<void> updateRequestStatus(String requestId, String newStatus) async {
     await _db.collection('ride_requests').doc(requestId).update({
       'status': newStatus,
+    });
+  }
+
+  // --- Chat Features ---
+
+  // Send a chat message
+  Future<void> sendMessage(String requestId, String senderId, String message) async {
+    await _db
+        .collection('ride_requests')
+        .doc(requestId)
+        .collection('messages')
+        .add({
+      'senderId': senderId,
+      'message': message,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // Stream of chat messages for a specific request
+  Stream<List<Map<String, dynamic>>> getMessages(String requestId) {
+    return _db
+        .collection('ride_requests')
+        .doc(requestId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data(),
+        };
+      }).toList();
+    });
+  }
+
+  // Stream of active requests for a RIDER (to see their own requests)
+  Stream<List<Map<String, dynamic>>> getRiderRequests(String riderId) {
+    return _db
+        .collection('ride_requests')
+        .where('riderId', isEqualTo: riderId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+          final requests = <Map<String, dynamic>>[];
+          for (var doc in snapshot.docs) {
+            final data = doc.data();
+            // Filter for active requests only
+            if (data['status'] == 'rejected' || data['status'] == 'completed') continue;
+            
+            // We might need driver details here
+            final driverProfile = await getUserProfile(data['driverId']);
+            
+            requests.add({
+              'requestId': doc.id,
+              ...data,
+              'driverName': driverProfile?['displayName'] ?? 'Unknown Driver',
+              'driverPhone': driverProfile?['phoneNumber'],
+            });
+          }
+          
+          // Sort: Active (accepted/on_route/arrived) first, then pending
+          requests.sort((a, b) {
+            final statusA = a['status'];
+            final statusB = b['status'];
+            
+            int score(String s) {
+              if (['accepted', 'on_route', 'arrived'].contains(s)) return 3;
+              if (s == 'pending') return 2;
+              return 1;
+            }
+            
+            return score(statusB).compareTo(score(statusA));
+          });
+          
+          return requests;
+        });
+  }
+
+  // Stream of request history for a RIDER
+  Stream<List<Map<String, dynamic>>> getRiderHistory(String riderId) {
+    return _db
+        .collection('ride_requests')
+        .where('riderId', isEqualTo: riderId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+          final requests = <Map<String, dynamic>>[];
+          for (var doc in snapshot.docs) {
+            final data = doc.data();
+            // Filter for history only
+            if (data['status'] != 'rejected' && data['status'] != 'completed') continue;
+            
+            final driverProfile = await getUserProfile(data['driverId']);
+            
+            requests.add({
+              'requestId': doc.id,
+              ...data,
+              'driverName': driverProfile?['displayName'] ?? 'Unknown Driver',
+            });
+          }
+          
+          // Sort by timestamp descending
+          requests.sort((a, b) {
+            final t1 = a['timestamp'] as Timestamp?;
+            final t2 = b['timestamp'] as Timestamp?;
+            if (t1 == null || t2 == null) return 0;
+            return t2.compareTo(t1);
+          });
+          
+          return requests;
+        });
+  }
+
+  // Submit a rating
+  Future<void> submitRating({
+    required String rideId,
+    required String raterId,
+    required String ratedId,
+    required String role, // 'driver' or 'rider' (person being rated)
+    required double overallRating,
+    required Map<String, double> criteriaRatings,
+    String? comment,
+  }) async {
+    final batch = _db.batch();
+    
+    // 1. Create rating document
+    final ratingRef = _db.collection('ratings').doc();
+    batch.set(ratingRef, {
+      'rideId': rideId,
+      'raterId': raterId,
+      'ratedId': ratedId,
+      'role': role,
+      'overallRating': overallRating,
+      'criteriaRatings': criteriaRatings,
+      'comment': comment,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    
+    // 2. Update user stats
+    final userRef = _db.collection('users').doc(ratedId);
+    // We need to read the user doc first to calculate new average, 
+    // but we can't do that easily in a batch without a transaction.
+    // For simplicity in this MVP, we'll use FieldValue.increment and then a separate update for average?
+    // No, average needs current sum. Let's use a Transaction instead of Batch.
+    
+    // Switch to Transaction
+    return _db.runTransaction((transaction) async {
+      final userDoc = await transaction.get(userRef);
+      if (!userDoc.exists) throw Exception("User not found");
+      
+      final currentSum = (userDoc.data()?['ratingSum'] ?? 0.0) as double;
+      final currentCount = (userDoc.data()?['ratingCount'] ?? 0) as int;
+      
+      final newSum = currentSum + overallRating;
+      final newCount = currentCount + 1;
+      final newAverage = newSum / newCount;
+      
+      transaction.update(userRef, {
+        'ratingSum': newSum,
+        'ratingCount': newCount,
+        'averageRating': newAverage,
+      });
+      
+      transaction.set(ratingRef, {
+        'rideId': rideId,
+        'raterId': raterId,
+        'ratedId': ratedId,
+        'role': role,
+        'overallRating': overallRating,
+        'criteriaRatings': criteriaRatings,
+        'comment': comment,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      
+      // 3. Update ride request to mark as rated
+      final rideRef = _db.collection('ride_requests').doc(rideId);
+      // If the RATER is the driver, then 'driverHasRated' = true
+      // If the RATER is the rider, then 'riderHasRated' = true
+      // Wait, 'role' arg is the person BEING RATED.
+      // So if role == 'rider', then the RATER is the DRIVER.
+      final fieldToUpdate = role == 'rider' ? 'driverHasRated' : 'riderHasRated';
+      
+      transaction.update(rideRef, {
+        fieldToUpdate: true,
+      });
     });
   }
 }
