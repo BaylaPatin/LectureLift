@@ -61,16 +61,11 @@ class AppTheme {
   
   static const LinearGradient yellowGradient = LinearGradient(
     colors: [
-      Color(0xFFFFC947), // Yellow/gold
-      Color(0xFFFFAB70), // Peach
-      Color(0xFFFF7F7F), // Coral/salmon
-      Color(0xFFFF69B4), // Hot pink
-      Color(0xFFFF1493), // Deep pink
-      Color(0xFFD946EF), // Bright magenta
-      Color(0xFFA020F0), // Purple-magenta transition
-      Color(0xFF8B00FF), // Vivid purple
-      Color(0xFF6A0DAD), // Medium purple
-      Color(0xFF4B0082), // Deep blue-purple (indigo)
+      Color(0xFFFFD700), // Gold
+      Color(0xFFFFC107), // Amber
+      Color(0xFFFFB300), // Deep Amber
+      Color(0xFFFFA000), // Dark Amber
+      Color(0xFFFFE082), // Light Amber
     ],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
