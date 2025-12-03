@@ -252,31 +252,7 @@ class DatabaseService {
     return degrees * pi / 180;
   }
 
-  // Get user's exact location (only when they accept a ride for directions)
-  Future<Map<String, double>?> getUserExactLocation(String userId) async {
-    try {
-      final doc = await _db.collection('users').doc(userId).get();
-      final data = doc.data();
-      
-      if (data == null) return null;
-      
-      final location = data['location'];
-      if (location == null) return null;
-      
-      final exactLat = location['exactLatitude'];
-      final exactLng = location['exactLongitude'];
-      
-      if (exactLat == null || exactLng == null) return null;
-      
-      return {
-        'latitude': exactLat,
-        'longitude': exactLng,
-      };
-    } catch (e) {
-      print('Error getting exact location: $e');
-      return null;
-    }
-  }
+
 
   // Find matching drivers based on schedule (Optimized)
   Future<List<Map<String, dynamic>>> findMatchingDrivers(String riderId) async {
@@ -360,33 +336,7 @@ class DatabaseService {
     return matches;
   }
 
-  // Helper to find overlaps
-  List<String> _findScheduleOverlaps(List<ClassSession> riderSchedule, List<ClassSession> driverSchedule) {
-    final List<String> matches = [];
 
-    for (var riderClass in riderSchedule) {
-      for (var driverClass in driverSchedule) {
-        // Check if same day
-        if (riderClass.dayOfWeek == driverClass.dayOfWeek) {
-          // Check if times are similar (within 30 mins)
-          if (_isTimeClose(riderClass.startTime, driverClass.startTime) ||
-              _isTimeClose(riderClass.endTime, driverClass.endTime)) {
-            final timeStr = '${riderClass.startTime.hour}:${riderClass.startTime.minute.toString().padLeft(2, '0')}';
-            matches.add('${riderClass.dayOfWeek}: ${riderClass.className} ($timeStr)');
-            // Break inner loop to avoid double counting same class match
-            break; 
-          }
-        }
-      }
-    }
-    return matches;
-  }
-
-  bool _isTimeClose(TimeOfDay t1, TimeOfDay t2) {
-    final m1 = t1.hour * 60 + t1.minute;
-    final m2 = t2.hour * 60 + t2.minute;
-    return (m1 - m2).abs() <= 30; // Within 30 minutes
-  }
 
   // --- Ride Requests ---
 

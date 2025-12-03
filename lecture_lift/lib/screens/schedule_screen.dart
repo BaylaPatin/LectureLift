@@ -100,9 +100,18 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   List<ClassSession> _getClassesForDay(DateTime day) {
     final dayName = _getDayName(day.weekday);
-    return _schedule.where((session) {
+    final classes = _schedule.where((session) {
       return session.dayOfWeek.contains(dayName);
     }).toList();
+    
+    // Sort by start time (earliest first)
+    classes.sort((a, b) {
+      final aMinutes = a.startTime.hour * 60 + a.startTime.minute;
+      final bMinutes = b.startTime.hour * 60 + b.startTime.minute;
+      return aMinutes.compareTo(bMinutes);
+    });
+    
+    return classes;
   }
 
   String _getDayName(int weekday) {
