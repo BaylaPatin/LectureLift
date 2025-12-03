@@ -12,7 +12,9 @@ import 'schedule_screen.dart';
 import 'find_ride_screen.dart';
 import '../services/database_service.dart';
 import '../services/location_service.dart';
+import '../services/location_service.dart';
 import '../services/auth_state.dart';
+import '../theme/app_theme.dart';
 
 class MapScreen extends StatefulWidget {
   final LatLng? destination;
@@ -440,7 +442,7 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: AppTheme.darkBackground,
         foregroundColor: Colors.white,
         title: const Text('Map Navigation'),
         actions: [

@@ -171,6 +171,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 8),
             
+            // Rating
+            if (_userProfile != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryYellow.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.primaryYellow.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.star, color: AppTheme.primaryYellow, size: 18),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${(_userProfile!['averageRating'] ?? 0.0).toStringAsFixed(1)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
+                    Text(
+                      ' (${_userProfile!['ratingCount'] ?? 0} reviews)',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+            
             // Role toggle
             Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
