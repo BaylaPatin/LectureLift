@@ -12,7 +12,6 @@ import 'schedule_screen.dart';
 import 'find_ride_screen.dart';
 import '../services/database_service.dart';
 import '../services/location_service.dart';
-import '../services/location_service.dart';
 import '../services/auth_state.dart';
 import '../theme/app_theme.dart';
 
