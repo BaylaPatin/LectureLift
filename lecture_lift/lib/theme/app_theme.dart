@@ -37,23 +37,43 @@ class AppTheme {
     end: Alignment.bottomRight,
   );
   
+  
   static const LinearGradient purpleGradient = LinearGradient(
-    colors: [primaryPurple, primaryYellow], // Updated to LSU Purple & Gold
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    colors: [
+      //Color(0xFF4B0082), // Deep blue-purple (indigo)
+      Color(0xFF5B0A99), // Blue-purple blend
+      Color(0xFF6A0DAD), // Medium purple
+     
+      Color(0xFFA020F0), // Purple-magenta transition
+      Color(0xFFB933EA), // Magenta blend
+      Color(0xFFD946EF), // Bright magenta
+      Color(0xFFE95DE8), // Magenta-pink
+      
+      Color(0xFFFF7F7F), // Coral/salmon
+      Color(0xFFFF9578), // Coral-peach
+      Color(0xFFFFAB70), // Peach
+      Color(0xFFFFBA5C), // Peach-yellow
+      Color(0xFFFFC947), // Yellow/gold
+    ],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
   
   static const LinearGradient yellowGradient = LinearGradient(
-    colors: [primaryYellow, primaryPurple], // Reverse LSU Gradient
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-  
-  // LSU Theme Gradient - Purple to Gold
-  static const LinearGradient lsuGradient = LinearGradient(
-    colors: [primaryPurple, primaryYellow],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFFFC947), // Yellow/gold
+      Color(0xFFFFAB70), // Peach
+      Color(0xFFFF7F7F), // Coral/salmon
+      Color(0xFFFF69B4), // Hot pink
+      Color(0xFFFF1493), // Deep pink
+      Color(0xFFD946EF), // Bright magenta
+      Color(0xFFA020F0), // Purple-magenta transition
+      Color(0xFF8B00FF), // Vivid purple
+      Color(0xFF6A0DAD), // Medium purple
+      Color(0xFF4B0082), // Deep blue-purple (indigo)
+    ],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
   
   // Role-based Gradients
