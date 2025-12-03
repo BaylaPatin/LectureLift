@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
 class LectureLiftLogo extends StatelessWidget {
@@ -24,23 +25,23 @@ class LectureLiftLogo extends StatelessWidget {
             children: [
               Text(
                 'Lecture',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: height * 0.5,
-                  fontWeight: FontWeight.w500, // Medium weight
+                  fontWeight: FontWeight.w300, // Light weight for thin lettering
                   letterSpacing: -1.5,
                   color: Colors.white,
                   height: 1.0,
                 ),
               ),
               ShaderMask(
-                shaderCallback: (bounds) => AppTheme.lsuGradient.createShader(
+                shaderCallback: (bounds) => AppTheme.purpleGradient.createShader(
                   Rect.fromLTWH(0, 0, bounds.width, bounds.height),
                 ),
                 child: Text(
                   'Lift',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: height * 0.5,
-                    fontWeight: FontWeight.w900, // Extra Bold/Black weight
+                    fontWeight: FontWeight.w900, // Extra Bold for thick lettering
                     letterSpacing: -1.5,
                     color: Colors.white, // Required for ShaderMask
                     height: 1.0,
@@ -54,3 +55,4 @@ class LectureLiftLogo extends StatelessWidget {
     );
   }
 }
+
