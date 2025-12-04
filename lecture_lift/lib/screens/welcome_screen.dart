@@ -19,7 +19,7 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(flex: 2),
+              const SizedBox(height: 150),
               
               // Centered Logo - responsive size
               Center(
@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
               
               // Tagline
               Text(
-                'YOUR CAMPUS COMPANION',
+                'LET\'S GET TO CLASS',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -42,7 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
               
-              const Spacer(flex: 3),
+              const SizedBox(height: 120),
               
               // Sign Up Button
               GlassGradientButton(
@@ -82,3 +82,4 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
+
