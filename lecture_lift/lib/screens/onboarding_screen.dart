@@ -61,20 +61,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 Column(
                   children: [
-                    // Back to Welcome button
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, size: 28, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          tooltip: 'Back to Welcome',
-                        ),
-                      ),
-                    ),
+                    // Back to Welcome button removed as per request
+
 
                 // PageView
                 Expanded(
@@ -160,9 +148,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back button
-                      if (_currentPage > 0 && _currentPage < 8 && _currentPage != 3) // Hide back button on verification page
+                      if (_currentPage < 8 && _currentPage != 3) // Hide back button on verification page
                         TextButton(
-                          onPressed: _isSaving ? null : _previousPage,
+                          onPressed: _isSaving 
+                              ? null 
+                              : () {
+                                  if (_currentPage == 0) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    _previousPage();
+                                  }
+                                },
                           child: const Text(
                             "Back",
                             style: TextStyle(fontSize: 16, color: Colors.white70),

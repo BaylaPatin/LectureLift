@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import '../models/schedule_model.dart';
 import '../theme/app_theme.dart';
+import 'glass_gradient_button.dart';
 
 class CalendarImportWidget extends StatelessWidget {
   final Function(List<ClassSession>) onClassesImported;
@@ -246,14 +247,23 @@ class CalendarImportWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            GlassGradientButton(
               onPressed: () => _importCalendar(context),
-              icon: const Icon(Icons.upload_file),
-              label: const Text('Choose .ics File'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppTheme.secondaryColor,
-                foregroundColor: Colors.black,
+              gradient: AppTheme.yellowGradient,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.upload_file, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Choose .ics File',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
