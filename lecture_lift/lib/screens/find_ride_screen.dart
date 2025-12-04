@@ -12,6 +12,7 @@ import 'profile_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'chat_screen.dart';
 import '../widgets/rating_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FindRideScreen extends StatefulWidget {
   const FindRideScreen({Key? key}) : super(key: key);
@@ -951,6 +952,25 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 ),
               ),
 
+            // Open in Maps Button
+            if (request['riderLocation'] != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GlassGradientButton(
+                  onPressed: () => _openInMaps(request),
+                  gradient: AppTheme.yellowGradient,
+                  height: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.map, color: Colors.white, size: 18),
+                      SizedBox(width: 8),
+                      Text('Open in Maps', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
+
             // Action Buttons
             if (status == 'pending')
               Row(
@@ -1101,5 +1121,34 @@ class _FindRideScreenState extends State<FindRideScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openInMaps(Map<String, dynamic> request) async {
+    final riderLocation = request['riderLocation'];
+    if (riderLocation == null) return;
+
+    final lat = riderLocation['latitude'];
+    final lng = riderLocation['longitude'];
+
+    // Use a universal URL that works across platforms
+    final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open maps')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error opening maps: $e')),
+        );
+      }
+    }
   }
 }
