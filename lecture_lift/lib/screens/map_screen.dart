@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -437,66 +436,79 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: AppTheme.darkBackground,
-        foregroundColor: Colors.white,
-        title: const Text('Map Navigation'),
-        actions: [
-          if (_markers.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: _clearRoute,
-              tooltip: 'Clear Route',
-            ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    extendBodyBehindAppBar: true,
+    extendBody: true,
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: AppTheme.darkBackground.withOpacity(0.9),
+      foregroundColor: Colors.white,
+      elevation: 0,
+      title: const Text('Map Navigation'),
+      toolbarHeight: 48,
+      actions: [
+        if (_markers.isNotEmpty)
           IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              print('Settings pressed');
-            },
+            icon: const Icon(Icons.clear),
+            onPressed: _clearRoute,
+            tooltip: 'Clear Route',
           ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            initialCameraPosition: _initialCameraPosition,
-            markers: _markers,
-            polylines: _polylines,
-            onMapCreated: (controller) async {
-              setState(() {
-                _googleMapController = controller;
-              });
-              
-              // Load map style
-              DefaultAssetBundle.of(context)
-                  .loadString('assets/map_style.json')
-                  .then((style) {
-                _googleMapController!.setMapStyle(style);
-              }).catchError((error) {
-                print("Error loading map style: $error");
-              });
-              
-              // Move to current location immediately when map is ready
-              final position = await _locationService.getCurrentLocation();
-              if (position != null) {
-                controller.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      target: LatLng(position.latitude, position.longitude),
-                      zoom: 14.0,
-                    ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            print('Settings pressed');
+          },
+        ),
+      ],
+    ),
+    body: Stack(
+      children: [
+        GoogleMap(
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
+          compassEnabled: false,
+          webCameraControlEnabled:false,
+          initialCameraPosition: _initialCameraPosition,
+          markers: _markers,
+          polylines: _polylines,
+          onMapCreated: (controller) async {
+            setState(() {
+              _googleMapController = controller;
+            });
+          
+            // Load map style
+            DefaultAssetBundle.of(context)
+                .loadString('assets/map_style.json')
+                .then((style) {
+              _googleMapController!.setMapStyle(style);
+            }).catchError((error) {
+              print("Error loading map style: $error");
+            });
+            
+            // Move to current location immediately when map is ready
+            final position = await _locationService.getCurrentLocation();
+            if (position != null) {
+              controller.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng(position.latitude, position.longitude),
+                    zoom: 14.0,
                   ),
-                );
-              }
-            },
-            mapType: MapType.normal,
-          ),
-          MapSearchBar(
+                ),
+              );
+            }
+          },
+          mapType: MapType.normal,
+        ),
+        
+        // Add top padding to search bar to avoid AppBar
+        Positioned(
+          top: MediaQuery.of(context).padding.top + kToolbarHeight + 32,
+          left: 0,
+          right: 0,
+          child: MapSearchBar(
             searchController: _searchController,
             googleApiKey: _googleApiKey,
             onPlaceSelected: _onPlaceSelected,
@@ -505,42 +517,45 @@ class _MapScreenState extends State<MapScreen> {
               setState(() {});
             },
           ),
-          
-          // Find Ride Button (Only for Riders)
-          if (_userRole == 'rider') // Support both for backward compatibility
-            Positioned(
-              bottom: 16,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FindRideScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.directions_car),
-                  label: const Text('Find a Ride'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 4,
+        ),
+        
+        // Find Ride Button (Only for Riders)
+        if (_userRole == 'rider')
+          Positioned(
+            bottom: 100, // Adjusted to be above bottom nav
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FindRideScreen()),
+                  );
+                },
+                icon: const Icon(Icons.directions_car),
+                label: const Text('Find a Ride'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 4,
                 ),
               ),
             ),
-        ],
-      ),
-      bottomNavigationBar: AppBottomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-      floatingActionButton: Column(
+          ),
+      ],
+    ),
+    bottomNavigationBar: AppBottomNavigationBar(
+      selectedIndex: _selectedIndex,
+      onItemTapped: _onItemTapped,
+    ),
+    floatingActionButton: Padding(
+      padding: const EdgeInsets.only(bottom: 30, right:20),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
@@ -570,6 +585,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

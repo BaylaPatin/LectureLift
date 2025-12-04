@@ -30,6 +30,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _error;
   int _selectedIndex = 3; // Profile tab
 
+  // --- UPDATED FOR BLENDING ---
+  // Setting card color to transparent to blend with AppTheme.backgroundColor, 
+  // relying on borders for separation.
+  final Color _cardColor = Colors.transparent; 
+  final Color _textColor = Colors.white; 
+  final Color _subTextColor = Colors.grey[400]!; 
+
   @override
   void initState() {
     super.initState();
@@ -43,13 +50,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     try {
-      // Get userId from auth state
       final userId = widget.userId ?? await AuthState.getCurrentUserId() ?? 'demo_user';
-      
-      // Load user profile
       final profile = await _dbService.getUserProfile(userId);
-      
-      // Load schedule
       final schedule = await _dbService.getSchedule(userId);
       
       setState(() {
@@ -68,16 +70,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor, 
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Profile'), 
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.settings_outlined),
             onPressed: () {
-              // TODO: Navigate to edit profile
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edit profile coming soon!')),
+                const SnackBar(content: Text('Settings coming soon!')),
               );
             },
           ),
@@ -90,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      Icon(Icons.error_outline, size: 64, color: AppTheme.errorColor),
                       const SizedBox(height: 16),
                       Text('Error loading profile: $_error'),
                       const SizedBox(height: 16),
@@ -112,9 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildProfileHeader(),
                         const SizedBox(height: 24),
                         _buildScheduleSection(),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 40),
                         _buildLogoutButton(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 30),
                       ],
                     ),
                   ),
@@ -133,78 +136,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final role = _userProfile?['role'] ?? 'Student';
 
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: _cardColor, // Now transparent
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Colors.white.withOpacity(0.05)), // Subtle border remains
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(28.0),
         child: Column(
           children: [
-            // Profile Icon with gradient background
+            // Profile Icon
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: AppTheme.purpleGradient,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryPurple.withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                color: _cardColor,
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
-              child: const Icon(
-                Icons.person,
-                size: 48,
-                color: Colors.white,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AppTheme.purpleGradient,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryPurple.withOpacity(0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.person,
+                  size: 48,
+                  color: Colors.white,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             
             // Name
             Text(
               displayName,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: _textColor, 
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             
             // Rating
             if (_userProfile != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryYellow.withOpacity(0.1),
+                  color: Colors.amber.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.primaryYellow.withOpacity(0.3)),
+                  border: Border.all(color: Colors.amber.withOpacity(0.2)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star, color: AppTheme.primaryYellow, size: 18),
-                    const SizedBox(width: 4),
+                    Icon(Icons.star_rounded, color: Colors.amber[400], size: 20),
+                    const SizedBox(width: 6),
                     Text(
                       '${(_userProfile!['averageRating'] ?? 0.0).toStringAsFixed(1)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800, 
+                        color: Colors.amber[300],
+                        fontSize: 15
+                      ),
                     ),
                     Text(
-                      ' (${_userProfile!['ratingCount'] ?? 0} reviews)',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      '  •  ${_userProfile!['ratingCount'] ?? 0} reviews',
+                      style: TextStyle(color: Colors.amber[200], fontSize: 13),
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             
             // Role toggle
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: Colors.grey[300]!),
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -214,19 +233,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             
-            // Divider
-            Divider(color: Colors.grey[300]),
-            const SizedBox(height: 16),
+            Divider(color: Colors.white.withOpacity(0.1), height: 1),
+            const SizedBox(height: 20),
             
-            // Email
-            _buildInfoRow(Icons.email, email),
-            const SizedBox(height: 12),
-            
-            // Phone
-            if (phoneNumber != 'No phone')
-              _buildInfoRow(Icons.phone, phoneNumber),
+            _buildInfoRow(Icons.email_outlined, email),
+            if (phoneNumber != 'No phone') ...[
+              const SizedBox(height: 16),
+              _buildInfoRow(Icons.phone_outlined, phoneNumber),
+            ],
           ],
         ),
       ),
@@ -236,12 +252,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppTheme.primaryPurple),
-        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryPurple.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 20, color: AppTheme.primaryPurple),
+        ),
+        const SizedBox(width: 16),
         Expanded(
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: _subTextColor,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
@@ -261,16 +287,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            TextButton.icon(
+            TextButton(
               onPressed: () {
-                // Navigate to schedule screen for editing
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ScheduleScreen()),
                 );
               },
-              icon: const Icon(Icons.edit, size: 18),
-              label: const Text('Edit'),
+              child: const Text('Edit Schedule'),
             ),
           ],
         ),
@@ -285,41 +309,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildEmptySchedule() {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          children: [
-            Icon(
-              Icons.calendar_today,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No classes yet',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add your classes to see them here',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: _cardColor, // Transparent
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.calendar_today_outlined,
+            size: 48,
+            color: Colors.grey[700],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No classes yet',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: _subTextColor,
+                  fontWeight: FontWeight.w600
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Add your classes to find rides easier',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildScheduleList() {
-    // Group classes by day of week
     final Map<String, List<ClassSession>> groupedClasses = {};
     for (var classSession in _schedule) {
       if (!groupedClasses.containsKey(classSession.dayOfWeek)) {
@@ -328,7 +354,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       groupedClasses[classSession.dayOfWeek]!.add(classSession);
     }
 
-    // Sort days
     final daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     final sortedDays = daysOfWeek.where((day) => groupedClasses.containsKey(day)).toList();
 
@@ -339,17 +364,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 4, bottom: 8),
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
               child: Text(
                 day,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.primaryPurple,
+                      fontWeight: FontWeight.w700,
                     ),
               ),
             ),
             ...classes.map((classSession) => _buildClassCard(classSession)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
         );
       }).toList(),
@@ -357,10 +381,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildClassCard(ClassSession classSession) {
-    return Card(
-      elevation: 1,
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: _cardColor, // Transparent
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -368,11 +395,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.primaryPurple.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.primaryPurple.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
-                Icons.class_,
+                Icons.school_outlined,
                 color: AppTheme.primaryPurple,
                 size: 24,
               ),
@@ -385,32 +412,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     classSession.className,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: _textColor,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
+                      Icon(Icons.access_time_rounded, size: 14, color: _subTextColor),
                       const SizedBox(width: 4),
                       Text(
                         '${_formatTime(classSession.startTime)} - ${_formatTime(classSession.endTime)}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                        style: TextStyle(color: _subTextColor, fontSize: 13),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                      const SizedBox(width: 12),
+                      Icon(Icons.location_on_outlined, size: 14, color: _subTextColor),
                       const SizedBox(width: 4),
-                      Text(
-                        classSession.location,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                      Expanded(
+                        child: Text(
+                          classSession.location,
+                          style: TextStyle(color: _subTextColor, fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -431,40 +455,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildLogoutButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: OutlinedButton.icon(
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
         onPressed: () async {
-          // Show confirmation dialog
           final shouldLogout = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Log Out'),
-              content: const Text('Are you sure you want to log out?'),
+              backgroundColor: _cardColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Log Out', style: TextStyle(color: Colors.white)),
+              content: const Text('Are you sure you want to log out?', style: TextStyle(color: Colors.white70)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: Text('Cancel', style: TextStyle(color: Colors.grey[400])),
                 ),
-                ElevatedButton(
+                TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.errorColor,
-                  ),
-                  child: const Text(
-                    'Log Out',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('Log Out', style: TextStyle(color: Colors.redAccent)),
                 ),
               ],
             ),
           );
 
           if (shouldLogout == true && mounted) {
-            // Clear user session
             await AuthState.clearUserSession();
-            
-            // Navigate to welcome screen and clear navigation stack
             if (mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -474,25 +490,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           }
         },
-        icon: const Icon(Icons.logout),
+        icon: const Icon(Icons.logout_rounded, size: 20),
         label: const Text(
           'Log Out',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppTheme.errorColor,
-          side: BorderSide(color: AppTheme.errorColor, width: 2),
-          padding: const EdgeInsets.symmetric(vertical: 14),
+        style: ElevatedButton.styleFrom(
+          // Set to a low-opacity black/dark color to blend subtly
+          backgroundColor: Colors.black38, 
+          foregroundColor: Colors.redAccent, 
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.redAccent.withOpacity(0.3), width: 1),
           ),
+          splashFactory: InkRipple.splashFactory,
         ),
       ),
     );
   }
 
   void _onItemTapped(int index) {
-    if (index == _selectedIndex) return; // Already on this screen
+    if (index == _selectedIndex) return;
     
     setState(() {
       _selectedIndex = index;
@@ -500,28 +520,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     switch (index) {
       case 0:
-        // Navigate to Map
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MapScreen()),
         );
         break;
       case 1:
-        // Navigate to Schedule
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const ScheduleScreen()),
         );
         break;
       case 2:
-        // Navigate to Rides
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => FindRideScreen()),
         );
         break;
       case 3:
-        // Profile - already here
         break;
     }
   }
@@ -529,17 +545,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildRoleButton(String role, bool isSelected) {
     return GestureDetector(
       onTap: () => _updateRole(role),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryPurple : Colors.transparent,
+          // Role button active color is still dark grey for contrast against the black54 toggle track
+          color: isSelected ? const Color(0xFF2C2C2E) : Colors.transparent, 
           borderRadius: BorderRadius.circular(25),
+          boxShadow: isSelected 
+            ? [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4, offset: const Offset(0, 2))]
+            : [],
         ),
         child: Text(
           role == 'rider' ? 'Rider' : 'Driver',
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[600],
+            color: isSelected ? Colors.white : Colors.grey[500],
             fontWeight: FontWeight.bold,
+            fontSize: 15,
           ),
         ),
       ),
@@ -558,7 +580,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
         
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Switched to ${newRole == 'rider' ? 'Rider' : 'Driver'} mode')),
+          SnackBar(
+            content: Text('Switched to ${newRole == 'rider' ? 'Rider' : 'Driver'} mode'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: const Color(0xFF2C2C2E), // Using a dark solid color for snackbar
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
         );
       }
     } catch (e) {
